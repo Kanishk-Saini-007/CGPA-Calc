@@ -2,7 +2,7 @@
 
 Know your SGPA, and plan the grades you need next. A private semester planner: add courses, credits and letter grades, and it works out your SGPA per semester, your CGPA overall, and the average grade point you need in your remaining credits to hit a target.
 
-**Live:** https://kanishksaini-007.github.io/CGPAPlanner/
+**Live:** https://kanishk-saini-007.github.io/CGPAPlanner/
 
 ## What it does
 - Semesters with courses: name, credits, letter grade. SGPA per semester, CGPA across all of them.
