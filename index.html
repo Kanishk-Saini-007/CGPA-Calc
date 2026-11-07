@@ -225,6 +225,8 @@ let state={sems:[]};
 try{const s=JSON.parse(localStorage.getItem('semscore_v1'));if(s&&Array.isArray(s.sems))state=s;}catch(e){}
 const save=()=>localStorage.setItem('semscore_v1',JSON.stringify(state));
 const num=v=>{const x=parseFloat(v);return isNaN(x)?null:x};
+const MAXF={ica:50,tee:100,total:100};
+const clampMark=(f,v)=>{const x=parseFloat(v);if(isNaN(x))return'';if(x<0)return'0';const mx=MAXF[f];return x>mx?String(mx):v;};
 const esc=s=>String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
 const SEMNAMES=['I','II','III','IV','V','VI','VII','VIII','IX','X'];
 const SHORT={btit:'B Tech IT',btce:'B Tech CE',mbatce:'MBA Tech CE',btcs:'B Tech CS',btaiml:'B Tech AIML'};
@@ -271,7 +273,7 @@ function sanitizeState(s){
     for(let i=0;i<ref.length;i++){
       const u=sem.courses[i]||{};
       if(u.n!==ref[i][0]||+u.cr!==ref[i][1]||+u.icaOnly!==ref[i][2])return null;
-      courses.push({n:ref[i][0],cr:ref[i][1],icaOnly:ref[i][2],ica:String(u.ica??''),tee:String(u.tee??''),total:String(u.total??''),mode:u.mode==='t'?'t':'s'});
+      courses.push({n:ref[i][0],cr:ref[i][1],icaOnly:ref[i][2],ica:clampMark('ica',String(u.ica??'')),tee:clampMark('tee',String(u.tee??'')),total:clampMark('total',String(u.total??'')),mode:u.mode==='t'?'t':'s'});
     }
     out.push({prog:sem.prog,semIdx:sem.semIdx,name:SHORT[sem.prog]+' - Semester '+SEMNAMES[sem.semIdx],courses});
   }
@@ -351,7 +353,7 @@ function renderAll(){renderSems();renderTop();save();}
 
 document.addEventListener('input',e=>{
   const d=e.target.dataset;
-  if(d.c!=null){const[si,ci]=d.c.split('.').map(Number);state.sems[si].courses[ci][d.f]=e.target.value;renderAll();}
+  if(d.c!=null){const[si,ci]=d.c.split('.').map(Number);const v=clampMark(d.f,e.target.value);if(v!==e.target.value)e.target.value=v;state.sems[si].courses[ci][d.f]=v;renderAll();}
 });
 document.addEventListener('click',e=>{
   const d=e.target.dataset;
