@@ -3,225 +3,381 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>CGPA Planner - know your SGPA, plan your next semester</title>
-<meta name="description" content="A private CGPA and SGPA planner. Add semesters and courses, see your SGPA and CGPA, and work out the grades you need to hit your target. No login, your data stays in your browser.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231b1440'/%3E%3Cpath d='M8 22l5-6 4 3 7-9' stroke='%23f5b942' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<title>CGPA Calc - NMIMS Shirpur SGPA &amp; CGPA calculator</title>
+<meta name="description" content="Unofficial SGPA and CGPA calculator for NMIMS MPSTME Shirpur, built on the Student Resource Book A.Y. 2026-27 (B Tech 2026-30, MBA Tech 2026-31). Subjects and credits prefilled - just enter your ICA and TEE marks after results. No login, your data stays in your browser.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230d1f16'/%3E%3Cpath d='M7 21l5-7 4 4 8-11' stroke='%23a3e635' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <style>
-:root{--ink:#1b1440;--ink2:#4a4370;--paper:#faf8f2;--card:#fff;--amber:#f5b942;--amber-d:#c98a12;--line:#e6e0d2;--good:#1e7d4f;--bad:#b3362b;--mut:#8a84a8}
+:root{--bg:#0d1f16;--bg2:#12291d;--card:#16301f;--card2:#1b3a26;--lime:#a3e635;--lime-d:#65a30d;--ink:#eaf7d9;--mut:#9db8a3;--line:#24452e;--bad:#f87171;--amber:#fbbf24}
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--paper);color:var(--ink);font:15px/1.55 Georgia,'Times New Roman',serif}
-.wrap{max-width:920px;margin:0 auto;padding:28px 16px 60px}
-header.top{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:10px;border-bottom:3px solid var(--ink);padding-bottom:14px;margin-bottom:22px}
-h1{font-size:30px;letter-spacing:.5px}
-h1 em{color:var(--amber-d);font-style:normal}
-.tag{color:var(--ink2);font-size:14px}
-button{font:600 13px/1 system-ui,sans-serif;cursor:pointer;border:2px solid var(--ink);background:var(--ink);color:#fff;border-radius:6px;padding:8px 14px}
-button.ghost{background:#fff;color:var(--ink)}
-button.ghost:hover{background:var(--ink);color:#fff}
-button.warn{border-color:var(--bad);color:var(--bad);background:#fff}
-button.warn:hover{background:var(--bad);color:#fff}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:22px}
-@media(max-width:760px){.grid{grid-template-columns:1fr}}
-.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px;box-shadow:0 1px 0 var(--line)}
-.card h2{font-size:19px;margin-bottom:6px}
-.big{font:700 44px/1.1 system-ui,sans-serif}
-.big small{font-size:16px;color:var(--mut);font-weight:400}
-.sub{color:var(--ink2);font-size:13.5px;margin-top:4px}
-.bar{height:10px;background:var(--line);border-radius:5px;overflow:hidden;margin-top:10px}
-.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--amber),var(--amber-d))}
-.sem{background:var(--card);border:1px solid var(--line);border-radius:10px;margin-bottom:16px;overflow:hidden}
-.sem-h{display:flex;align-items:center;gap:10px;padding:12px 16px;background:#f3efe4;border-bottom:1px solid var(--line);flex-wrap:wrap}
-.sem-h input.name{border:none;background:transparent;font:700 16px Georgia,serif;color:var(--ink);width:160px}
-.sem-h .sg{margin-left:auto;font:600 13px system-ui,sans-serif;color:var(--ink2)}
-.sem-h .sg b{color:var(--ink);font-size:15px}
-table{width:100%;border-collapse:collapse;font-family:system-ui,sans-serif;font-size:13.5px}
-th,td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--line)}
-th{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--mut)}
-td input,td select{width:100%;border:1px solid var(--line);border-radius:5px;padding:6px 8px;font:13px system-ui,sans-serif;background:#fff}
-td.cr input{text-align:center}
-.x{border:none;background:none;color:var(--bad);font-size:16px;padding:2px 6px;cursor:pointer}
-.sem-f{padding:10px 16px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.sem-f button{padding:6px 10px;font-size:12px}
-.planner{background:var(--ink);color:#fff;border-radius:10px;padding:20px;margin:22px 0}
-.planner h2{color:var(--amber);margin-bottom:8px}
-.planner label{font:600 12px system-ui,sans-serif;text-transform:uppercase;letter-spacing:.6px;color:#bdb6e0;display:block;margin:10px 0 4px}
-.planner input{width:110px;border:1px solid #3d3375;border-radius:6px;background:#241b52;color:#fff;padding:8px 10px;font:15px system-ui,sans-serif}
-.planner .row{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-end}
-.verdict{margin-top:14px;font-size:15px;line-height:1.6}
-.verdict b{color:var(--amber)}
-.verdict .no{color:#ff9d8f}
-.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
-footer{margin-top:30px;padding-top:14px;border-top:1px solid var(--line);color:var(--mut);font-size:13px;font-family:system-ui,sans-serif}
-dialog{border:none;border-radius:10px;padding:22px;max-width:420px;box-shadow:0 10px 40px #0004}
-dialog::backdrop{background:#1b144088}
-dialog textarea{width:100%;height:140px;font:12px monospace;border:1px solid var(--line);border-radius:6px;padding:8px;margin:10px 0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font:15px/1.55 system-ui,-apple-system,'Segoe UI',sans-serif;min-height:100vh}
+.wrap{max-width:900px;margin:0 auto;padding:0 16px 70px}
+header.hero{padding:34px 0 18px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.logo{font-size:30px;font-weight:800;letter-spacing:-.5px}
+.logo b{color:var(--lime)}
+.tagline{color:var(--mut);font-size:13.5px;margin-top:2px}
+.hbtns{display:flex;gap:8px}
+button{font:600 13px/1 system-ui,sans-serif;cursor:pointer;border:1.5px solid var(--lime);background:var(--lime);color:#0d1f16;border-radius:8px;padding:9px 15px;transition:transform .05s}
+button:active{transform:scale(.97)}
+button.ghost{background:transparent;color:var(--lime)}
+button.ghost:hover{background:var(--lime);color:#0d1f16}
+button.warn{border-color:var(--bad);color:var(--bad);background:transparent;font-size:11.5px;padding:6px 10px}
+button.warn:hover{background:var(--bad);color:#0d1f16}
+button:disabled{opacity:.45;cursor:not-allowed}
+.notice{font-size:12.5px;color:var(--mut);background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:11px 13px;margin-bottom:18px}
+.notice b{color:var(--ink)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px}
+.card h2{font-size:12px;letter-spacing:1.2px;text-transform:uppercase;color:var(--mut);margin-bottom:12px}
+.step{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:var(--lime);color:#0d1f16;font:700 12px/1 system-ui;margin-right:8px}
+select,input{font:14px/1.4 system-ui,sans-serif;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg2);color:var(--ink);width:100%}
+select:focus,input:focus{outline:1.5px solid var(--lime-d)}
+.rowline{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.rowline>select{flex:1;min-width:150px;width:auto}
+#loadMsg{color:var(--amber);font-size:12.5px;min-height:16px;margin-top:7px}
+.hero-score{background:linear-gradient(135deg,#16301f 0%,#0f2c1a 60%,#143b21 100%);border:1px solid var(--line);border-radius:16px;padding:22px 20px;margin-bottom:16px;display:flex;gap:22px;align-items:center;flex-wrap:wrap}
+.score-num{font-size:56px;font-weight:800;line-height:1;color:var(--lime)}
+.score-num small{font-size:20px;color:var(--mut);font-weight:600}
+.score-meta{flex:1;min-width:180px}
+.bar{height:9px;background:#0a1a10;border-radius:99px;overflow:hidden;margin:10px 0 6px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--lime-d),var(--lime));width:0;transition:width .3s}
+.sub{color:var(--mut);font-size:13px}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+.ref th{font:600 10.5px/1.3 system-ui;text-transform:uppercase;letter-spacing:.6px;color:var(--mut);text-align:left;padding:7px 8px;border-bottom:1px solid var(--line)}
+.ref td{font-size:13px;padding:5px 8px;border-bottom:1px solid var(--line)}
+.ref tr:last-child td{border-bottom:none}
+.ref td:nth-child(2){color:var(--lime);font-weight:700}
+.sem{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px}
+.sem-h{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px;padding-bottom:11px;border-bottom:1px solid var(--line)}
+.sem-h .nm{font-weight:700;font-size:15px;margin-right:auto}
+.sg{font:600 12.5px/1 system-ui;color:var(--mut)}
+.sg b{color:var(--lime);font-size:15px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.course{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:12px 13px}
+.c-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:10px}
+.c-name .c-cr{margin-left:6px;vertical-align:1px}
+.c-name{font-weight:600;font-size:13.5px;line-height:1.35}
+.c-cr{flex:none;font:600 11px/1 system-ui;color:var(--mut);border:1px solid var(--line);border-radius:99px;padding:4px 8px;white-space:nowrap}
+.c-row{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}
+.c-row label{display:flex;flex-direction:column;gap:5px;font:600 10px/1 system-ui;letter-spacing:.6px;text-transform:uppercase;color:var(--mut)}
+.c-row input{width:74px;text-align:center;padding:8px 4px}
+.c-row input::placeholder{color:var(--mut)}
+.c-only{font:600 10px/1 system-ui;letter-spacing:.6px;text-transform:uppercase;color:var(--amber);align-self:center;padding:8px 0}
+.c-res{margin-left:auto;display:flex;align-items:center;gap:8px}
+.c-fin{text-align:right}
+.c-fin small{display:block;font:600 10px/1 system-ui;letter-spacing:.6px;text-transform:uppercase;color:var(--mut);margin-bottom:4px}
+.c-fin .v{font-weight:700;font-size:14px}
+.pill{font:600 11.5px/1 system-ui;padding:5px 10px;border-radius:99px;border:1px solid var(--line);white-space:nowrap}
+.gpass{color:var(--lime);border-color:var(--lime-d)}
+.gfail{color:var(--bad);border-color:var(--bad)}
+.mode{display:inline-flex;border:1px solid var(--line);border-radius:99px;overflow:hidden;flex:none}
+.mode button{border:none;background:transparent;color:var(--mut);font:600 9.5px/1 system-ui;letter-spacing:.5px;text-transform:uppercase;padding:5px 8px;border-radius:0;cursor:pointer}
+.mode button.on{background:var(--lime);color:#0d1f16}
+.tnote{grid-column:1/-1;color:var(--amber);font-size:11.5px;margin-top:2px}
+.mut{color:var(--mut);font-size:12.5px}
+.no{color:var(--bad)}
+.empty{border:1.5px dashed var(--line);border-radius:14px;padding:34px 20px;text-align:center;color:var(--mut);font-size:13.5px;margin-bottom:16px}
+.empty b{color:var(--ink);display:block;font-size:15px;margin-bottom:4px}
+footer{margin-top:24px;padding-top:14px;border-top:1px solid var(--line);color:var(--mut);font-size:12.5px}
+dialog{background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:20px;max-width:560px;width:92%}
+dialog::backdrop{background:rgba(0,0,0,.55)}
+textarea{width:100%;min-height:130px;font:12px/1.5 monospace;padding:9px;border:1px solid var(--line);border-radius:8px;margin:10px 0;background:var(--bg2);color:var(--ink)}
+@media(max-width:640px){
+  .score-num{font-size:44px}
+  #progSel{flex:1 1 100%}
+  #semSel{flex:1 1 auto !important}
+  .grid{grid-template-columns:1fr}
+  .sem-h .nm{font-size:13.5px}
+}
 </style>
 </head>
 <body>
 <div class="wrap">
-<header class="top">
-  <div><h1>CGPA <em>Planner</em></h1><p class="tag">Know your SGPA. Plan the grades you need. Everything stays in your browser.</p></div>
+<header class="hero">
   <div>
-    <button class="ghost" id="exportBtn">Backup JSON</button>
+    <div class="logo">CGPA <b>Calc</b></div>
+    <div class="tagline">NMIMS MPSTME Shirpur &middot; SGPA &amp; CGPA in seconds &middot; enter marks, nothing else</div>
+  </div>
+  <div class="hbtns">
+    <button class="ghost" id="exportBtn">Backup</button>
     <button class="ghost" id="importBtn">Restore</button>
   </div>
 </header>
 
-<div class="grid">
-  <div class="card">
-    <h2>Your CGPA</h2>
-    <div class="big" id="cgpaBig">-<small> / <span class="scaleLabel">10</span></small></div>
-    <div class="bar"><i id="cgpaBar" style="width:0%"></i></div>
-    <p class="sub" id="cgpaSub">Add a semester below to start.</p>
-    <p class="sub" id="pctLine" style="display:none;margin-top:6px">About <b id="pctVal">-</b>% as a percentage, using the &times;<input id="pctMult" type="number" step="0.05" min="0" style="width:58px;border:1px solid var(--line);border-radius:5px;padding:2px 5px;font:13px system-ui,sans-serif"> rule - check the formula your college uses.</p>
+<div class="notice">Unofficial. Subjects, credits and rules straight from the <b>MPSTME Shirpur Student Resource Book A.Y. 2026-27</b> - <b>B Tech 2026-30</b> (Computer Engineering, Computer Science, IT, AI&amp;ML) and <b>MBA Tech 2026-31</b> (Computer Engineering). Senior batches follow their own SRB and are <b>not covered</b>; other campuses may differ. Always verify with your official grade sheet. Marks never leave your browser.</div>
+
+<div class="card">
+  <h2><span class="step">1</span>Pick your programme &amp; semester</h2>
+  <div class="rowline">
+    <select id="progSel" aria-label="Programme"></select>
+    <select id="semSel" aria-label="Semester" style="flex:0 1 140px"></select>
+    <button id="loadPreset">Load subjects</button>
   </div>
-  <div class="card">
-    <h2>Grading scale</h2>
-    <p class="sub" style="margin-bottom:8px">Pick the letter-to-point map your college uses. Default is the common 10-point scale.</p>
-    <div id="scaleBox" style="font-family:system-ui,sans-serif;font-size:13.5px"></div>
+  <div id="loadMsg"></div>
+  <div class="mut" style="margin-top:6px">Subjects and credits load exactly as printed in the SRB - locked so nothing can be typed wrong. You only enter marks: ICA + TEE, or just the total /100.</div>
+</div>
+
+<div class="hero-score">
+  <div class="score-num" id="cgpaBig">-<small> /10</small></div>
+  <div class="score-meta">
+    <h2 id="cgpaTitle" style="font-size:12px;letter-spacing:1.2px;text-transform:uppercase;color:var(--mut);margin-bottom:4px">Your CGPA</h2>
+    <div class="bar"><i id="cgpaBar"></i></div>
+    <div class="sub" id="cgpaSub">Load your semester, enter marks, done.</div>
   </div>
 </div>
 
-<div class="planner" id="planner">
-  <h2>Target planner</h2>
-  <p style="font-size:14px;color:#d8d3f0">What average grade point do you need in your remaining credits to reach your goal?</p>
-  <div class="row">
-    <div><label>Target CGPA</label><input id="target" type="number" step="0.01" min="0" value="8.5"></div>
-    <div><label>Credits left (incl. current sem)</label><input id="creditsLeft" type="number" step="1" min="0" value="20"></div>
-  </div>
-  <p class="verdict" id="verdict"></p>
-</div>
-
-<div class="toolbar">
-  <button id="addSem">+ Add semester</button>
-</div>
 <div id="sems"></div>
 
+<div class="card">
+  <h2>How it is calculated (from the SRB)</h2>
+  <table class="ref">
+    <tr><th>Final marks</th><th>Grade</th><th>Points</th><th>Performance</th></tr>
+    <tr><td>90 - 100</td><td>O</td><td>10</td><td>Outstanding</td></tr>
+    <tr><td>80 - 89.99</td><td>A+</td><td>9</td><td>Excellent</td></tr>
+    <tr><td>70 - 79.99</td><td>A</td><td>8</td><td>Very Good</td></tr>
+    <tr><td>60 - 69.99</td><td>B+</td><td>7</td><td>Good</td></tr>
+    <tr><td>55 - 59.99</td><td>B</td><td>6</td><td>Above Average</td></tr>
+    <tr><td>50 - 54.99</td><td>C</td><td>5</td><td>Average</td></tr>
+    <tr><td>40 - 49.99</td><td>P</td><td>4</td><td>Pass</td></tr>
+    <tr><td>0 - 39.99</td><td>F</td><td>0</td><td>Fail</td></tr>
+    <tr><td>Absent</td><td>AB</td><td>0</td><td>Absent</td></tr>
+  </table>
+  <div class="mut" style="margin-top:10px">
+    Final marks = ICA (out of 50) + TEE (out of 100, scaled to 50). Pass needs <b>40% in the TEE</b> and <b>40% aggregate</b>; "ICA only" subjects pass at 40% of ICA. Fail either and it counts as F (0 points) until the re-exam. SGPA / CGPA are credit-weighted; 0-credit subjects show but don't count. Entered only the total /100? Then pass assumes <b>TEE &ge; 40%</b>, which the SRB checks separately - marked with *. The SRB gives no CGPA-to-percentage conversion.
+  </div>
+</div>
+
 <footer>
-  <p>Letter points and formulas are editable in the scale card - colleges differ, so check yours. Data is saved only in this browser (localStorage). Built by Kanishk Saini as a learning project.</p>
+  Made by a student, for the campus. Not an official NMIMS tool. Source: MPSTME Shirpur SRB A.Y. 2026-27. Everything stays in your browser - use Backup to keep a copy or move devices.
 </footer>
 </div>
 
-<dialog id="ioDlg"><form method="dialog">
-  <h3 id="ioTitle">Backup</h3>
+<dialog id="ioDlg">
+  <h2 id="ioTitle" style="font-size:16px;margin-bottom:6px">Backup</h2>
   <textarea id="ioText"></textarea>
-  <div style="display:flex;gap:8px;justify-content:flex-end">
-    <button value="cancel" class="ghost">Close</button>
-    <button value="ok" id="ioOk">Apply</button>
+  <div class="rowline" style="justify-content:flex-end">
+    <button class="ghost" onclick="document.getElementById('ioDlg').close()">Close</button>
+    <button id="ioOk">Restore this backup</button>
   </div>
-</form></dialog>
+</dialog>
 
 <script>
 'use strict';
 const $=s=>document.querySelector(s);
-const DEFAULT_SCALE=[['S',10],['A',9],['B',8],['C',7],['D',6],['E',5],['F',0]];
-let state={scale:DEFAULT_SCALE.map(r=>r.slice()),sems:[]};
-try{const s=JSON.parse(localStorage.getItem('cgpa_planner_v1'));if(s&&Array.isArray(s.sems))state=s;}catch(e){}
-if(typeof state.mult!=='number'||!(state.mult>0))state.mult=9.5;
-if(!state.sems.length)state.sems=[{name:'Semester 1',courses:[{n:'',cr:4,g:''},{n:'',cr:4,g:''},{n:'',cr:3,g:''}]}];
-const save=()=>localStorage.setItem('cgpa_planner_v1',JSON.stringify(state));
-const maxPoint=()=>Math.max(...state.scale.map(r=>+r[1]||0),10);
-const pointsOf=g=>{const r=state.scale.find(x=>x[0]===g);return r?+r[1]:null};
-const esc=s=>String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+/* Grade bands: SRB A.Y. 2026-27, Part II, Grading System */
+const BANDS=[
+  {min:90,g:'O',p:10},{min:80,g:'A+',p:9},{min:70,g:'A',p:8},{min:60,g:'B+',p:7},
+  {min:55,g:'B',p:6},{min:50,g:'C',p:5},{min:40,g:'P',p:4},{min:0,g:'F',p:0}
+];
+const gradeOf=pct=>BANDS.find(b=>pct>=b.min);
+/* SRB A.Y. 2026-27 (MPSTME Shirpur) programme structures, PDF pp.84-99, visually transcribed.
+   Per-course: [name, credits, icaOnly(0/1)]. Credit totals cross-checked against SRB totals. */
+const PROGRAMS={
+btit:{label:'B Tech - Information Technology (2026-30)',sems:[
+[['Calculus',4,0],['Physics',4,0],['Basic Electrical and Electronics Engineering',3,0],['Computational Thinking for Problem Solving',4,0],['Engineering Graphics and Design',2,0],['Essential Electronics Practices',1,1],['English Communication',1,1],['Engineering Ethics',1,1],['Environmental Studies',0,1],['Constitution of India',0,1],['Coursera',1,1]],
+[['Linear Algebra and Differential Equations',4,0],['Elements of Biology',3,0],['Quantum Physics',3,0],['Principles of Economics and Management',3,0],['Digital Logic Design',3,0],['Programming with Python',2,0],['Indian Knowledge System',0,1],['Product Realization',2,1],['Coursera',1,1]],
+[['Management Accounting for Engineers',2,0],['Discrete Mathematics',3,0],['Data Structures and Algorithms',3,0],['Data Structures and Algorithms Lab',1,0],['Computer Networks',4,0],['Object Oriented Programming',2,0],['Object Oriented Programming Lab',1,0],['Computer Organization and Architecture',3,0],['Technical Communication',1,1],['Transforming Ideas to Innovation',1,1],['Community Service',0,0],['Coursera',1,1]],
+[['Probability and Statistics',3,0],['Database Management Systems',3,0],['Database Management Systems Lab',1,0],['Operating Systems',4,0],['Foundations of Artificial Intelligence',3,0],['Web Technologies',2,0],['Introduction to Cybersecurity',3,0],['Data Engineering and Visualization',1,0],['Design Experience I',1,0],['Coursera',2,1]],
+[['System Administration',2,1],['Design and Analysis of Algorithms',4,0],['Machine Learning Techniques',3,0],['Program Elective-I',3,0],['Program Elective-II',4,0],['Open Elective-I',3,0],['Open Elective-II',3,0],['Design Experience II',2,0],['Coursera',1,1]],
+[['Interpersonal Skills',1,1],['Software Engineering',4,0],['Human Computer Interaction',3,0],['Mobile Application Development',1,1],['Program Elective-III',3,0],['Program Elective-IV',3,0],['Open Elective-III',3,0],['Open Elective-IV',3,0],['Design Experience III',2,0],['Coursera',2,1]],
+[['Cloud Computing',3,0],['Embedded Systems and IoT',3,0],['Program Elective-V',3,0],['Program Elective-VI',4,0],['Open Elective-V',3,0],['Capstone Project',5,1],['Coursera',2,1]],
+[['Project',10,1]]]},
+btce:{label:'B Tech - Computer Engineering (2026-30)',sems:[
+[['Calculus',4,0],['Physics',4,0],['Elements of Biology',3,0],['Computational Thinking for Problem Solving',4,0],['Engineering Graphics and Design',2,0],['Essential Electronics Practices',1,1],['Engineering Ethics',1,1],['Indian Knowledge System',0,1],['Environmental Studies',0,1],['Coursera',1,1]],
+[['Linear Algebra and Differential Equations',4,0],['Quantum Physics',3,0],['Object Oriented Programming',2,0],['Object Oriented Programming Lab',1,0],['Basic Electrical and Electronics Engineering',3,0],['Product Realization',2,1],['English Communication',1,1],['Web Development',3,0],['Constitution of India',0,1],['Coursera',1,1]],
+[['Signals and Systems',3,0],['Computer Organization and Architecture',3,0],['Data Structures and Algorithms',3,0],['Data Structures and Algorithms Lab',1,0],['Principles of Economics and Management',3,0],['Probability and Statistics',3,0],['Discrete Mathematics',3,0],['Technical Communication',1,1],['Community Service',0,0],['Programming with Python',2,0],['Coursera',1,1]],
+[['Operating Systems',4,0],['Database Management Systems',3,0],['Database Management Systems Lab',1,0],['Complex Variables and Transforms',4,0],['Design and Analysis of Algorithms',4,0],['Design Experience I',1,0],['Computer Networks',4,0],['Machine Learning',3,0],['Coursera',2,1]],
+[['Software Engineering',4,0],['Program Elective-I',4,0],['Advanced Linear Algebra',2,1],['Program Elective-II',3,0],['Open Elective-I',3,0],['Open Elective-II',3,0],['Design Experience II',2,0],['Theoretical Computer Science',3,0],['Coursera',1,1]],
+[['Transforming Ideas to Innovation',1,0],['Compiler Design',3,0],['Artificial Intelligence',3,0],['Open Elective-III',3,0],['Open Elective-IV',3,0],['Design Experience III',2,0],['Program Elective-III',3,0],['Program Elective-IV',3,0],['Interpersonal Skills',1,1],['Coursera',2,1]],
+[['Capstone Project',5,0],['Distributed Computing',3,0],['Program Elective-V',4,0],['Management Accounting for Engineers',2,0],['Open Elective-V',3,0],['Program Elective-VI',3,0],['Coursera',2,1]],
+[['Project',10,0]]]},
+mbatce:{label:'MBA Tech - Computer Engineering (2026-31)',sems:[
+[['Calculus',4,0],['Physics',4,0],['Elements of Biology',3,0],['Computational Thinking for Problem Solving',4,0],['Engineering Graphics and Design',2,0],['Essential Electronics Practices',1,1],['Engineering Ethics',1,1],['Indian Knowledge System',0,1],['Environmental Studies',0,1],['Principles of Management',1,0],['Coursera',1,1]],
+[['Linear Algebra and Differential Equations',4,0],['Quantum Physics',3,0],['Basic Electrical and Electronics Engineering',3,0],['Microeconomics',2,0],['Object Oriented Programming',2,0],['Object Oriented Programming Lab',1,0],['Web Development',3,0],['Constitution of India',0,1],['Business Communication',1,1],['Product Realization',2,1],['Coursera',1,1]],
+[['Signals and Systems',3,0],['Computer Organization and Architecture',3,0],['Data Structures and Algorithms',3,0],['Data Structures and Algorithms Lab',1,0],['Discrete Mathematics',3,0],['Technical Communication',1,1],['Community Service',0,0],['Programming with Python',2,0],['Management Accounting for Engineers',2,0],['Coursera',1,1]],
+[['Operating Systems',4,0],['Database Management Systems',3,0],['Database Management Systems Lab',1,0],['Design and Analysis of Algorithms',4,0],['Design Experience I',1,0],['Computer Networks',4,0],['Machine Learning',3,0],['Business Statistics',3,0],['Complex Variables and Transforms',4,0],['Coursera',2,1]],
+[['Software Engineering',4,0],['Program Elective-I',4,0],['Advanced Linear Algebra',2,1],['Program Elective-II',3,0],['Open Elective-I',3,0],['Open Elective-II',3,0],['Design Experience II',2,0],['Macro Economics',2,0],['Theoretical Computer Science',3,0],['Coursera',1,1]],
+[['Transforming Ideas to Innovation',1,1],['Compiler Design',3,0],['Artificial Intelligence',3,0],['Open Elective-III',3,0],['Open Elective-IV',3,0],['Design Experience III',2,0],['Program Elective-III',3,0],['Program Elective-IV',3,0],['Interpersonal Skills',1,1],['Decision Analysis and Modelling',3,0],['Coursera',2,1]],
+[['Technical Internship',5,1],['Distributed Computing',3,0],['Program Elective-V',3,0],['Program Elective-VI',4,0],['Open Elective-V',3,0],['Operations Management',3,0],['Financial Accounting and Analysis',3,0],['Marketing Management',3,0],['Data Visualisation for Business Decisions',3,1],['Coursera',2,1]],
+[['Business Analytics',3,0],['Logistics and Supplychain Management',2,0],['Financial Management',3,0],['B2B Marketing',3,0],['Organizational Behaviour',3,0],['Business Research Methods',2,0],['Entrepreneurship',2,1]],
+[['Management of Technology and Innovation',2,0],['Human Resource Management',2,0],['Elective- 1',2,0],['Elective- 2',2,0],['Elective- 3',2,0],['Elective- 4',2,0],['Management Internship Programme',12,1]],
+[['Strategic Management',3,0],['Sustainable Business Management Practices',2,0],['Contract, Competition and Consumer Laws',2,0],['Elective- 5',2,0],['Elective- 6',2,0],['Elective- 7',2,0],['Elective- 8',2,0],['Capstone Project',5,1]]]},
+btcs:{label:'B Tech - Computer Science (2026-30)',sems:[
+[['Calculus',4,0],['Physics',4,0],['Basic Electrical and Electronics Engineering',3,0],['Computational Thinking for Problem Solving',4,0],['Engineering Graphics and Design',2,0],['Essential Electronics Practices',1,1],['Engineering Ethics',1,1],['Indian Knowledge System',0,1],['Constitution of India',0,1],['Coursera',1,1]],
+[['Linear Algebra and Differential Equations',4,0],['Quantum Physics',3,0],['Object Oriented Programming',2,0],['Object Oriented Programming Lab',1,0],['Elements of Biology',3,0],['Programming with Python',2,0],['Product Realization',2,1],['English Communication',1,1],['Transforming Ideas to Innovation',1,1],['Environmental Studies',0,1],['Coursera',1,1]],
+[['Probability and Statistics',3,0],['Principles of Economics and Management',3,0],['Digital Circuits and Computer Architecture',4,0],['Discrete Mathematics',3,0],['Computer Networks',4,0],['Data Extraction and Processing',2,1],['Technical Communication',1,1],['Data Structures and Algorithms',3,0],['Data Structures and Algorithms Lab',1,0],['Community Service',0,0],['Coursera',1,1]],
+[['Operating Systems',4,0],['Database Management Systems',3,0],['Artificial Intelligence and Machine Learning',4,0],['Complex Variables and Transforms',4,0],['Database Management Systems Lab',1,0],['Design Experience I',1,0],['Theoretical Computer Science',3,0],['Design and Analysis of Algorithms',4,0],['Coursera',2,1]],
+[['Software Engineering',4,0],['Program Elective-I',4,0],['Program Elective-II',3,0],['Web Development',3,0],['Open Elective-I',3,0],['Open Elective-II',3,0],['Design Experience II',2,0],['Coursera',1,1]],
+[['Compiler Design',3,0],['Design and Application of Internet of Things',4,0],['Open Elective-III',3,0],['Open Elective-IV',3,0],['Design Experience III',2,0],['Program Elective-III',3,0],['Program Elective-IV',3,0],['Interpersonal Skills',1,1],['Coursera',2,1]],
+[['Capstone Project',5,0],['Distributed Computing',3,0],['Program Elective-V',4,0],['Program Elective-VI',3,0],['Open Elective-V',3,0],['Management Accounting for Engineers',2,0],['Coursera',2,1]],
+[['Project',10,0]]]},
+btaiml:{label:'B Tech - Artificial Intelligence and Machine Learning (2026-30)',sems:[
+[['Calculus',4,0],['Physics',4,0],['Basic Electrical and Electronics Engineering',3,0],['Computational Thinking for Problem Solving',4,0],['Engineering Graphics and Design',2,0],['Essential Electronics Practices',1,1],['Engineering Ethics',1,1],['Indian Knowledge System',0,1],['Coursera',1,1]],
+[['Linear Algebra and Differential Equations',4,0],['Intelligent Systems',3,0],['Elements of Biology',3,0],['Principles of Economics and Management',3,0],['Programming with Python',2,0],['Product Realization',2,1],['English Communication',1,1],['Environmental Studies',0,1],['Constitution of India',0,1],['Transforming Ideas to Innovation',1,1],['Coursera',1,1]],
+[['Discrete Mathematics',3,0],['Operating Systems',4,0],['Data Wrangling',3,0],['Probability and Statistics',3,0],['Data Visualization and Interpretation',2,1],['Data Structures and Algorithms',3,0],['Data Structures and Algorithms Lab',1,0],['Technical Communication',1,1],['Community Service',0,0],['Program Elective-I',3,0],['Coursera',1,1]],
+[['Image and Video Processing',3,0],['Machine Learning',4,0],['Database Management Systems',3,0],['Database Management Systems Lab',1,0],['Design and Analysis of Algorithms',4,0],['Object Oriented Programming',2,0],['Object Oriented Programming Lab',1,0],['Program Elective-II',3,0],['Open Elective-I',3,0],['Design Experience I',1,0],['Coursera',2,1]],
+[['Computer Networks',4,0],['Deep Learning',3,0],['Responsible and Ethical AI',1,1],['Management Accounting for Engineers',2,0],['Design Experience II',2,0],['Program Elective-III',3,0],['Quantum Machine Learning',3,0],['Open Elective-II',3,0],['Coursera',1,1]],
+[['Natural Language Processing',3,0],['Agile Product Development with DevOps',2,1],['Big Data Analytics',3,0],['Program Elective-IV',3,0],['Program Elective-V',3,0],['Open Elective-III',3,0],['Open Elective-IV',3,0],['Design Experience III',2,0],['Interpersonal Skills',1,1],['Coursera',2,1]],
+[['Applied Time Series Analysis',3,0],['Advanced Topics in Machine Learning',4,0],['Program Elective-VI',3,0],['Program Elective-VII',2,0],['Capstone Project',5,1],['Open Elective-V',3,0],['Coursera',2,1]],
+[['Project',10,1]]]}
+};
 
+let state={sems:[]};
+try{const s=JSON.parse(localStorage.getItem('semscore_v1'));if(s&&Array.isArray(s.sems))state=s;}catch(e){}
+const save=()=>localStorage.setItem('semscore_v1',JSON.stringify(state));
+const num=v=>{const x=parseFloat(v);return isNaN(x)?null:x};
+const esc=s=>String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+const SEMNAMES=['I','II','III','IV','V','VI','VII','VIII','IX','X'];
+const SHORT={btit:'B Tech IT',btce:'B Tech CE',mbatce:'MBA Tech CE',btcs:'B Tech CS',btaiml:'B Tech AIML'};
+const BATCH={btit:'2026-30',btce:'2026-30',mbatce:'2026-31',btcs:'2026-30',btaiml:'2026-30'};
+
+function courseRes(c){
+  let pct,fail=false,why='',assumed=false;
+  if(c.icaOnly){
+    const ica=num(c.ica); if(ica==null)return null;
+    pct=ica*2; fail=ica<20; if(fail)why='ICA below 40%';
+  }else if(c.mode==='t'){
+    const t=num(c.total); if(t==null)return null;
+    pct=t; fail=t<40; if(fail)why='aggregate below 40%'; else assumed=true;
+  }else{
+    const ica=num(c.ica); if(ica==null)return null;
+    const tee=num(c.tee); if(tee==null)return null;
+    const fin=ica+tee/2; pct=fin;
+    if(tee<40){fail=true;why='TEE below 40%';}
+    else if(fin<40){fail=true;why='aggregate below 40%';}
+  }
+  const b=fail?{g:'F',p:0}:gradeOf(pct);
+  return{pct,grade:b.g,points:b.p,pass:!fail,why,assumed};
+}
 function semStats(sem){
-  let cr=0,pts=0,done=0;
-  sem.courses.forEach(c=>{const p=pointsOf(c.g);if(c.cr>0){if(p!=null){cr+=+c.cr;pts+=+c.cr*p;done++;}}});
-  return{cr,pts,sgpa:cr?pts/cr:null,done};
+  let cr=0,pts=0,done=0,fails=0,totalCr=0;
+  sem.courses.forEach(c=>{if(+c.cr>0)totalCr+=+c.cr;const r=courseRes(c);if(r){done++;if(!r.pass)fails++;if(+c.cr>0){cr+=+c.cr;pts+=+c.cr*r.points;}}});
+  return{cr,pts,sgpa:cr?pts/cr:null,done,fails,totalCr,complete:done===sem.courses.length};
 }
 function overall(){
-  let cr=0,pts=0;
-  state.sems.forEach(s=>{const t=semStats(s);cr+=t.cr;pts+=t.pts;});
-  return{cr,pts,cgpa:cr?pts/cr:null};
+  let cr=0,pts=0,assumed=false,totalCr=0,complete=true;
+  state.sems.forEach(s=>{const t=semStats(s);cr+=t.cr;pts+=t.pts;totalCr+=t.totalCr;if(!t.complete)complete=false;s.courses.forEach(c=>{const r=courseRes(c);if(r&&r.assumed)assumed=true;});});
+  return{cr,pts,cgpa:cr?pts/cr:null,assumed,totalCr,complete};
 }
 
-function renderScale(){
-  $('#scaleBox').innerHTML='<table><tr><th>Letter</th><th>Points</th><th></th></tr>'+
-    state.scale.map((r,i)=>`<tr><td><input data-sc="${i}" data-f="0" value="${esc(r[0])}" style="width:60px"></td><td><input data-sc="${i}" data-f="1" type="number" step="0.5" value="${r[1]}" style="width:70px"></td><td><button class="x" data-scdel="${i}" title="remove">&times;</button></td></tr>`).join('')+
-    '</table><button class="ghost" id="addScale" style="margin-top:8px;padding:5px 10px;font-size:12px">+ row</button>';
+function sanitizeState(s){
+  if(!s||!Array.isArray(s.sems))return null;
+  const out=[];
+  for(const sem of s.sems){
+    const pre=sem&&PROGRAMS[sem.prog];
+    if(!pre||!pre.sems[sem.semIdx])return null;
+    const ref=pre.sems[sem.semIdx];
+    if(!Array.isArray(sem.courses)||sem.courses.length!==ref.length)return null;
+    const courses=[];
+    for(let i=0;i<ref.length;i++){
+      const u=sem.courses[i]||{};
+      if(u.n!==ref[i][0]||+u.cr!==ref[i][1]||+u.icaOnly!==ref[i][2])return null;
+      courses.push({n:ref[i][0],cr:ref[i][1],icaOnly:ref[i][2],ica:String(u.ica??''),tee:String(u.tee??''),total:String(u.total??''),mode:u.mode==='t'?'t':'s'});
+    }
+    out.push({prog:sem.prog,semIdx:sem.semIdx,name:SHORT[sem.prog]+' - Semester '+SEMNAMES[sem.semIdx],courses});
+  }
+  if(out.length&&out.some(x=>x.prog!==out[0].prog))return null;
+  if(new Set(out.map(x=>x.prog+':'+x.semIdx)).size!==out.length)return null;
+  return{sems:out};
 }
 
 function renderSems(){
+  if(!state.sems.length){
+    $('#sems').innerHTML='<div class="empty"><b>No semester loaded yet</b>Pick your programme and semester above - the official subject list appears here, and you only type your marks.</div>';
+    return;
+  }
   $('#sems').innerHTML=state.sems.map((s,si)=>{
     const t=semStats(s);
+    let anyAssumed=false;
+    s.courses.forEach(c=>{const rr=courseRes(c);if(rr&&rr.assumed)anyAssumed=true;});
+    const cards=s.courses.map((c,ci)=>{
+      const r=courseRes(c);
+      if(r&&r.assumed)anyAssumed=true;
+      let inputs;
+      if(c.icaOnly){
+        inputs=`<label>ICA /50<input data-c="${si}.${ci}" data-f="ica" type="number" inputmode="decimal" min="0" max="50" step="0.5" value="${esc(c.ica)}" placeholder="-"></label><span class="c-only">ICA only - no TEE</span>`;
+      }else if(c.mode==='t'){
+        inputs=`<label>Total /100<input data-c="${si}.${ci}" data-f="total" type="number" inputmode="decimal" min="0" max="100" step="0.5" value="${esc(c.total)}" placeholder="-"></label>`;
+      }else{
+        inputs=`<label>ICA /50<input data-c="${si}.${ci}" data-f="ica" type="number" inputmode="decimal" min="0" max="50" step="0.5" value="${esc(c.ica)}" placeholder="-"></label>
+        <label>TEE /100<input data-c="${si}.${ci}" data-f="tee" type="number" inputmode="decimal" min="0" max="100" step="0.5" value="${esc(c.tee)}" placeholder="-"></label>`;
+      }
+      return `<div class="course">
+      <div class="c-top">
+        <div class="c-name">${esc(c.n)}<span class="c-cr">${c.cr} cr</span></div>
+        ${c.icaOnly?'':`<div class="mode"><button data-mode="${si}.${ci}" data-m="s" class="${c.mode!=='t'?' on':''}">ICA+TEE</button><button data-mode="${si}.${ci}" data-m="t" class="${c.mode==='t'?' on':''}">Total</button></div>`}
+      </div>
+      <div class="c-row">
+        ${inputs}
+        <div class="c-res">
+          <div class="c-fin"><small>Final</small><span class="v">${r?r.pct.toFixed(1):'-'}</span></div>
+          ${r?`<span class="pill ${r.pass?'gpass':'gfail'}"${r.why?` title="${esc(r.why)}"`:''}${r.assumed?' title="Pass assumes TEE at least 40% - only the total was entered"':''}>${r.grade} &middot; ${r.points}${r.assumed?'*':''}${r.pass?'':' &middot; re-exam'}</span>`:'<span class="pill">-</span>'}
+        </div>
+      </div>
+    </div>`;}).join('');
     return `<div class="sem">
     <div class="sem-h">
-      <input class="name" data-sem="${si}" value="${esc(s.name)}" placeholder="Semester name">
-      <span class="sg">SGPA <b>${t.sgpa!=null?t.sgpa.toFixed(2):'-'}</b> &middot; ${t.cr} credits counted</span>
-      <button class="warn" data-sem-del="${si}" style="padding:4px 10px;font-size:11px">Delete sem</button>
+      <span class="nm">${esc(s.name)}</span>
+      <span class="sg">SGPA <b>${t.sgpa!=null?t.sgpa.toFixed(2)+(anyAssumed?'*':''):'-'}</b> &middot; ${t.complete?t.cr+' cr':t.cr+' of '+t.totalCr+' cr entered'}${t.fails?` &middot; <span class="no">${t.fails} F</span>`:''}</span>
+      <button class="warn" data-sem-del="${si}">Remove semester</button>
     </div>
-    <table><tr><th style="width:46%">Course</th><th style="width:18%">Credits</th><th style="width:22%">Grade</th><th></th></tr>
-    ${s.courses.map((c,ci)=>`<tr>
-      <td><input data-c="${si}.${ci}" data-f="n" value="${esc(c.n)}" placeholder="e.g. Mathematics I"></td>
-      <td class="cr"><input data-c="${si}.${ci}" data-f="cr" type="number" min="0" step="0.5" value="${c.cr}"></td>
-      <td><select data-c="${si}.${ci}" data-f="g"><option value="">-</option>${state.scale.map(r=>`<option ${c.g===r[0]?'selected':''} value="${esc(r[0])}">${esc(r[0])} (${r[1]})</option>`).join('')}</select></td>
-      <td><button class="x" data-cdel="${si}.${ci}" title="remove">&times;</button></td>
-    </tr>`).join('')}</table>
-    <div class="sem-f"><button class="ghost" data-cadd="${si}">+ course</button></div>
+    <div class="grid">
+    ${cards}
+    ${anyAssumed?'<div class="tnote">* total entered without the TEE split - grade and pass assume TEE &ge; 40%, which the SRB requires separately.</div>':''}
+    </div>
   </div>`;}).join('');
 }
-
 function renderTop(){
-  const o=overall(),mp=maxPoint();
-  if(o.cgpa==null){$('#cgpaBig').innerHTML=`-<small> / ${mp}</small>`;$('#cgpaBar').style.width='0%';$('#cgpaSub').textContent='Add a semester below to start.';$('#pctLine').style.display='none';}
+  const o=overall();
+  if(o.cgpa==null){$('#cgpaBig').innerHTML='-<small> /10</small>';$('#cgpaBar').style.width='0%';$('#cgpaSub').textContent='Load your semester, enter marks, done.';$('#cgpaTitle').textContent='Your CGPA';}
   else{
-    $('#cgpaBig').innerHTML=`${o.cgpa.toFixed(2)}<small> / ${mp}</small>`;
-    $('#cgpaBar').style.width=Math.min(100,o.cgpa/mp*100)+'%';
-    const doneCr=o.cr;
-    $('#cgpaSub').textContent=`Across ${doneCr} graded credits in ${state.sems.length} semester${state.sems.length>1?'s':''}.`;
-    const m=(typeof state.mult==='number'&&state.mult>0)?state.mult:9.5;
-    $('#pctLine').style.display='';$('#pctVal').textContent=(o.cgpa*m).toFixed(2);
+    $('#cgpaBig').innerHTML=`${o.cgpa.toFixed(2)}${o.assumed?'*':''}<small> /10</small>`;
+    $('#cgpaBar').style.width=Math.min(100,o.cgpa/10*100)+'%';
+    $('#cgpaTitle').textContent=o.complete?'Your CGPA':'Your CGPA so far';
+    $('#cgpaSub').textContent=(o.complete?`${o.cr} graded credits across ${state.sems.length} semester${state.sems.length>1?'s':''} - credit-weighted, SRB formula.`:`${o.cr} of ${o.totalCr} credits entered across ${state.sems.length} semester${state.sems.length>1?'s':''} - partial until every subject has marks.`)+(o.assumed?' * includes total-only entries - pass assumes TEE at least 40%.':'');
   }
 }
-
-function renderVerdict(){
-  const o=overall(),mp=maxPoint();
-  const t=parseFloat($('#target').value),left=parseFloat($('#creditsLeft').value);
-  const el=$('#verdict');
-  if(!(t>0)||!(left>=0)){el.textContent='Enter a target and the credits you still have to earn.';return;}
-  const curCr=o.cr,curPts=o.pts;
-  if(curCr===0){el.innerHTML=`No graded credits yet. To finish at <b>${t.toFixed(2)}</b>, you need to average <b>${t.toFixed(2)}</b> grade points across your first ${left} credits.`;return;}
-  const need=(t*(curCr+left)-curPts)/left;
-  if(need<=0){el.innerHTML=`You are already past <b>${t.toFixed(2)}</b>. Even 0 points from here keeps you at or above it. Nice.`;}
-  else if(need>mp){el.innerHTML=`<span class="no">Not reachable:</span> you would need an average of <b>${need.toFixed(2)}</b> points but the scale tops out at ${mp}. Best possible finish: <b>${((curPts+left*mp)/(curCr+left)).toFixed(2)}</b>.`;}
-  else{
-    const letter=[...state.scale].sort((a,b)=>b[1]-a[1]).find(r=>+r[1]>=need);
-    el.innerHTML=`You need an average of <b>${need.toFixed(2)}</b> grade points over your next ${left} credits${letter?` - roughly a <b>${esc(letter[0])}</b> average`:''}. Current pace: ${(o.cgpa||0).toFixed(2)} over ${curCr} credits.`;
-  }
+function renderPresetSels(){
+  const ks=Object.keys(PROGRAMS);
+  const locked=state.sems.length?state.sems[0].prog:null;
+  const sel=$('#progSel');
+  sel.innerHTML=ks.map(k=>`<option value="${k}">${SHORT[k]} (${BATCH[k]})</option>`).join('');
+  sel.value=locked||(ks.includes(sel.value)?sel.value:ks[0]);
+  sel.disabled=!!locked;
+  const p=sel.value;
+  $('#semSel').innerHTML=PROGRAMS[p].sems.map((s,i)=>`<option value="${i}">Semester ${SEMNAMES[i]}</option>`).join('');
+  $('#loadMsg').textContent=locked?`Locked to ${SHORT[locked]} - your loaded semesters are from this programme. Remove all semesters to switch.`:'';
 }
-
-function renderAll(){renderScale();renderSems();renderTop();renderVerdict();save();}
+function renderAll(){renderSems();renderTop();save();}
 
 document.addEventListener('input',e=>{
   const d=e.target.dataset;
-  if(d.sc!=null){state.scale[+d.sc][+d.f]=d.f==='1'?parseFloat(e.target.value)||0:e.target.value.toUpperCase();renderSems();renderTop();renderVerdict();save();return;}
-  if(d.sem!=null){state.sems[+d.sem].name=e.target.value;save();return;}
-  if(d.c!=null){const[si,ci]=d.c.split('.').map(Number);const c=state.sems[si].courses[ci];
-    c[d.f]=d.f==='cr'?parseFloat(e.target.value)||0:e.target.value;
-    if(d.f==='g'||d.f==='cr'){
-      const t=semStats(state.sems[si]),sg=document.querySelectorAll('.sem')[si].querySelector('.sg');
-      if(sg)sg.innerHTML=`SGPA <b>${t.sgpa!=null?t.sgpa.toFixed(2):'-'}</b> &middot; ${t.cr} credits counted`;
-      renderTop();renderVerdict();save();
-    }else save();return;}
+  if(d.c!=null){const[si,ci]=d.c.split('.').map(Number);state.sems[si].courses[ci][d.f]=e.target.value;renderAll();}
 });
 document.addEventListener('click',e=>{
   const d=e.target.dataset;
-  if(d.scdel!=null){if(state.scale.length>2){state.scale.splice(+d.scdel,1);renderAll();}return;}
-  if(e.target.id==='addScale'){state.scale.push(['X',0]);renderAll();return;}
-  if(d.semDel!=null){if(confirm('Delete this semester and its courses?')){state.sems.splice(+d.semDel,1);renderAll();}return;}
-  if(d.cdel!=null){const[si,ci]=d.cdel.split('.').map(Number);state.sems[si].courses.splice(ci,1);renderAll();return;}
-  if(d.cadd!=null){state.sems[+d.cadd].courses.push({n:'',cr:3,g:''});renderAll();return;}
+  if(d.semDel!=null){if(confirm('Remove this semester and its marks?')){state.sems.splice(+d.semDel,1);renderPresetSels();renderAll();}return;}
+  if(d.mode!=null){const[si,ci]=d.mode.split('.').map(Number);state.sems[si].courses[ci].mode=d.m;renderAll();}
 });
-$('#addSem').onclick=()=>{state.sems.push({name:'Semester '+(state.sems.length+1),courses:[{n:'',cr:4,g:''},{n:'',cr:4,g:''},{n:'',cr:3,g:''}]});renderAll();};
-$('#pctMult').value=state.mult;
-$('#pctMult').addEventListener('input',e=>{const v=parseFloat(e.target.value);if(v>0){state.mult=v;save();const o=overall();if(o.cgpa!=null)$('#pctVal').textContent=(o.cgpa*state.mult).toFixed(2);}});
-$('#target').addEventListener('input',renderVerdict);
-$('#creditsLeft').addEventListener('input',renderVerdict);
+$('#progSel').addEventListener('change',()=>{
+  const p=$('#progSel').value;
+  $('#semSel').innerHTML=PROGRAMS[p].sems.map((s,i)=>`<option value="${i}">Semester ${SEMNAMES[i]}</option>`).join('');
+});
+$('#loadPreset').onclick=()=>{
+  const p=$('#progSel').value,si=+$('#semSel').value;
+  if(state.sems.length&&state.sems[0].prog!==p){$('#loadMsg').textContent='Remove your current semesters before switching programme.';return;}
+  if(state.sems.some(s=>s.prog===p&&s.semIdx===si)){$('#loadMsg').textContent=`Semester ${SEMNAMES[si]} of ${SHORT[p]} is already loaded below.`;return;}
+  const pre=PROGRAMS[p];if(!pre||!pre.sems[si])return;
+  $('#loadMsg').textContent='';
+  state.sems.push({prog:p,semIdx:si,name:SHORT[p]+' - Semester '+SEMNAMES[si],courses:pre.sems[si].map(c=>({n:c[0],cr:c[1],ica:'',tee:'',total:'',mode:'s',icaOnly:c[2]}))});
+  renderPresetSels();renderAll();
+};
 
 let ioMode='export';
 $('#exportBtn').onclick=()=>{ioMode='export';$('#ioTitle').textContent='Backup - copy this somewhere safe';$('#ioText').value=JSON.stringify(state);$('#ioOk').style.display='none';$('#ioDlg').showModal();};
 $('#importBtn').onclick=()=>{ioMode='import';$('#ioTitle').textContent='Restore - paste a backup';$('#ioText').value='';$('#ioOk').style.display='';$('#ioDlg').showModal();};
-$('#ioOk').onclick=()=>{if(ioMode!=='import')return;try{const s=JSON.parse($('#ioText').value);if(!Array.isArray(s.sems)||!Array.isArray(s.scale))throw 0;state=s;renderAll();}catch(e){alert('That does not look like a CGPA Planner backup.');}};
+$('#ioOk').onclick=()=>{if(ioMode!=='import')return;try{const s=sanitizeState(JSON.parse($('#ioText').value));if(!s)throw 0;state=s;renderPresetSels();renderAll();$('#ioDlg').close();}catch(e){alert('That backup was rejected - it does not match the official SRB subject lists (edited subjects, credits or programmes are not allowed).');}};
+
+renderPresetSels();
 renderAll();
 </script>
 </body>
