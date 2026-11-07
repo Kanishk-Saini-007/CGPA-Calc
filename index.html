@@ -8,6 +8,9 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230c0e12'/%3E%3Cpath d='M7 21l5-7 4 4 8-11' stroke='%235ea9ff' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <style>
 :root{--bg:#f3f5f9;--bg2:#eef1f6;--card:#ffffff;--card2:#f7f9fc;--acc:#2563eb;--acc-d:#1d4ed8;--ink:#182234;--mut:#5b6676;--line:#dde3ec;--bad:#dc2626;--good:#16a34a;--amber:#b45309}
+html[data-theme=dark]{--bg:#0d1015;--bg2:#141922;--card:#161c26;--card2:#1a212d;--acc:#5ea9ff;--acc-d:#7cb6ff;--ink:#e6ebf3;--mut:#98a4b4;--line:#2b333f;--bad:#f87171;--good:#4ade80;--amber:#fbbf24}
+html[data-theme=dark] .gpass{border-color:#1f7a45}
+html[data-theme=dark] .gfail{border-color:#8f2f2f}
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--ink);font:15px/1.55 system-ui,-apple-system,'Segoe UI',sans-serif;min-height:100vh}
@@ -115,6 +118,7 @@ textarea{width:100%;min-height:130px;font:12px/1.5 monospace;padding:9px;border:
     <div class="tagline">NMIMS MPSTME Shirpur &middot; enter marks, get SGPA &amp; CGPA</div>
   </div>
   <div class="hbtns">
+    <button class="ghost" id="themeBtn" type="button" title="Switch to dark theme">Dark</button>
     <button class="ghost" id="exportBtn">Backup</button>
     <button class="ghost" id="importBtn">Restore</button>
   </div>
@@ -455,6 +459,14 @@ $('#exportBtn').onclick=()=>{ioMode='export';$('#ioTitle').textContent='Backup -
 $('#importBtn').onclick=()=>{ioMode='import';$('#ioTitle').textContent='Restore - paste a backup';$('#ioText').value='';$('#ioOk').style.display='';$('#ioDlg').showModal();};
 $('#ioOk').onclick=()=>{if(ioMode!=='import')return;try{const s=sanitizeState(JSON.parse($('#ioText').value));if(!s)throw 0;state=s;renderPresetSels();renderAll();$('#ioDlg').close();}catch(e){alert('That backup was rejected - it does not match the official SRB subject lists (edited subjects, credits or programmes are not allowed).');}};
 
+
+(function(){
+  var btn=$('#themeBtn'),root=document.documentElement,key='cgpa-theme';
+  function apply(t){root.dataset.theme=t;try{localStorage.setItem(key,t)}catch(e){}if(btn){btn.textContent=t==='dark'?'Light':'Dark';btn.title='Switch to '+(t==='dark'?'light':'dark')+' theme';}}
+  var saved='light';try{saved=localStorage.getItem(key)==='dark'?'dark':'light'}catch(e){}
+  apply(saved);
+  if(btn)btn.onclick=function(){apply(root.dataset.theme==='dark'?'light':'dark');};
+})();
 renderPresetSels();
 renderAll();
 </script>
