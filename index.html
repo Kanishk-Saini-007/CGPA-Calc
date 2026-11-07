@@ -509,8 +509,9 @@ function buildReport(name){
       const f=fields[r*2+cx],x=fx[cx],w=74;
       doc.setFont('helvetica','normal');doc.setFontSize(7);setT(mut);
       doc.text(f[0],x,y,{charSpace:0.6});
-      doc.setFont('helvetica','bold');doc.setFontSize(10.5);setT(ink);
-      doc.text(doc.splitTextToSize(f[1],w)[0],x,y+4.6);
+      doc.setFont('helvetica','bold');let vfs=10.5;doc.setFontSize(vfs);setT(ink);
+      while(doc.getTextWidth(f[1])>w&&vfs>7.5){vfs-=0.5;doc.setFontSize(vfs);}
+      doc.text(f[1],x,y+4.6);
       setD(lineC);doc.line(x,y+6.6,x+w,y+6.6);
     }
     y+=11.5;
