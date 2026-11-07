@@ -52,6 +52,13 @@ table{width:100%;border-collapse:collapse;font-size:13.5px}
 .sg{font:600 12.5px/1 system-ui;color:var(--mut)}
 .sg b{color:var(--lime);font-size:15px}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+details.zero{margin-top:10px}
+details.zero>summary{cursor:pointer;list-style:none;display:block;color:var(--mut);font-size:12px;padding:9px 12px;border:1px dashed var(--line);border-radius:10px;user-select:none}
+details.zero>summary::-webkit-details-marker{display:none}
+details.zero>summary::before{content:'+ ';color:var(--lime);font-weight:700}
+details.zero[open]>summary::before{content:'- '}
+details.zero>summary span{display:block;font-size:11px;opacity:.75}
+.zgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
 .course{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:12px 13px}
 .c-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:10px}
 .c-name .c-cr{margin-left:6px;vertical-align:1px}
@@ -86,6 +93,7 @@ textarea{width:100%;min-height:130px;font:12px/1.5 monospace;padding:9px;border:
   #progSel{flex:1 1 100%}
   #semSel{flex:1 1 auto !important}
   .grid{grid-template-columns:1fr}
+  .zgrid{grid-template-columns:1fr}
   .sem-h .nm{font-size:13.5px}
 }
 </style>
@@ -251,9 +259,9 @@ function courseRes(c){
   return{pct,grade:b.g,points:b.p,pass:!fail,why,assumed};
 }
 function semStats(sem){
-  let cr=0,pts=0,done=0,fails=0,totalCr=0;
-  sem.courses.forEach(c=>{if(+c.cr>0)totalCr+=+c.cr;const r=courseRes(c);if(r){done++;if(!r.pass)fails++;if(+c.cr>0){cr+=+c.cr;pts+=+c.cr*r.points;}}});
-  return{cr,pts,sgpa:cr?pts/cr:null,done,fails,totalCr,complete:done===sem.courses.length};
+  let cr=0,pts=0,done=0,fails=0,totalCr=0,credited=0,creditedDone=0;
+  sem.courses.forEach(c=>{const r=courseRes(c);if(+c.cr>0){totalCr+=+c.cr;credited++;if(r)creditedDone++;}if(r){done++;if(!r.pass)fails++;if(+c.cr>0){cr+=+c.cr;pts+=+c.cr*r.points;}}});
+  return{cr,pts,sgpa:cr?pts/cr:null,done,fails,totalCr,complete:creditedDone===credited};
 }
 function overall(){
   let cr=0,pts=0,assumed=false,totalCr=0,complete=true;
@@ -291,7 +299,7 @@ function renderSems(){
     const t=semStats(s);
     let anyAssumed=false;
     s.courses.forEach(c=>{const rr=courseRes(c);if(rr&&rr.assumed)anyAssumed=true;});
-    const cards=s.courses.map((c,ci)=>{
+    const card=(c,ci)=>{
       const r=courseRes(c);
       if(r&&r.assumed)anyAssumed=true;
       let inputs;
@@ -315,7 +323,11 @@ function renderSems(){
           ${r?`<span class="pill ${r.pass?'gpass':'gfail'}"${r.why?` title="${esc(r.why)}"`:''}${r.assumed?' title="Pass assumes TEE at least 40% - only the total was entered"':''}>${r.grade} &middot; ${r.points}${r.assumed?'*':''}${r.pass?'':' &middot; re-exam'}</span>`:'<span class="pill">-</span>'}
         </div>
       </div>
-    </div>`;}).join('');
+    </div>`;};
+    const withIdx=s.courses.map((c,ci)=>[c,ci]);
+    const mainCards=withIdx.filter(([c])=>+c.cr>0).map(([c,ci])=>card(c,ci)).join('');
+    const zeroCards=withIdx.filter(([c])=>!(+c.cr>0));
+    const zeroHtml=zeroCards.length?`<details class="zero"><summary>Not included in CGPA - ${zeroCards.length} zero-credit subject${zeroCards.length>1?'s':''}<span>optional, never affects SGPA or CGPA</span></summary><div class="zgrid">${zeroCards.map(([c,ci])=>card(c,ci)).join('')}</div></details>`:'';
     return `<div class="sem">
     <div class="sem-h">
       <span class="nm">${esc(s.name)}</span>
@@ -323,9 +335,10 @@ function renderSems(){
       <button class="warn" data-sem-del="${si}">Remove semester</button>
     </div>
     <div class="grid">
-    ${cards}
+    ${mainCards}
     ${anyAssumed?'<div class="tnote">* total entered without the TEE split - grade and pass assume TEE &ge; 40%, which the SRB requires separately.</div>':''}
     </div>
+    ${zeroHtml}
   </div>`;}).join('');
 }
 function renderTop(){
