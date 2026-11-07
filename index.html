@@ -481,69 +481,135 @@ const KS_LOGO='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAIAAADTED8
 function loadJsPdf(){return new Promise((res,rej)=>{if(window.jspdf&&window.jspdf.jsPDF)return res();const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';s.onload=()=>res();s.onerror=()=>rej(new Error('jspdf load failed'));document.head.appendChild(s);});}
 function buildReport(name){
   const doc=new window.jspdf.jsPDF({unit:'mm',format:'a4'});
-  const M=14,R=196;let y=0;
-  const ink=[24,34,52],mut=[91,102,118],acc=[37,99,235],lineC=[221,227,236];
+  const PW=210,PH=297,FR=9,M=17,R=193;let y=0;
+  const acc=[37,99,235],ink=[24,34,52],mut=[91,102,118],bg=[237,242,253],stripe=[241,245,254],barFill=[220,231,253],lineC=[208,218,236],green=[22,163,74],red=[220,38,38],amber=[180,83,9];
+  const setT=c=>doc.setTextColor(c[0],c[1],c[2]);
+  const setF=c=>doc.setFillColor(c[0],c[1],c[2]);
+  const setD=c=>doc.setDrawColor(c[0],c[1],c[2]);
+  const frame=()=>{setF(bg);doc.rect(0,0,PW,PH,'F');setF([255,255,255]);setD(acc);doc.setLineWidth(0.9);doc.roundedRect(FR,FR,PW-2*FR,PH-2*FR,2.5,2.5,'FD');doc.setLineWidth(0.2);};
+  frame();
   const dt=new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
-  doc.addImage(KS_LOGO,'PNG',M,10,16,16);
-  doc.setFont('helvetica','bold');doc.setFontSize(17);doc.setTextColor(ink[0],ink[1],ink[2]);
-  doc.text('CGPA Calc - Report Card',M+21,19);
-  doc.setFont('helvetica','normal');doc.setFontSize(9.5);doc.setTextColor(mut[0],mut[1],mut[2]);
-  doc.text('Unofficial report card - generated on this device, nothing uploaded',M+21,24.5);
-  doc.text('Generated '+dt,R,19,{align:'right'});
-  y=32;doc.setDrawColor(lineC[0],lineC[1],lineC[2]);doc.line(M,y,R,y);y+=8;
-  doc.setFont('helvetica','bold');doc.setFontSize(12);doc.setTextColor(ink[0],ink[1],ink[2]);
-  doc.text(name,M,y);
-  doc.setFont('helvetica','normal');doc.setFontSize(9.5);doc.setTextColor(mut[0],mut[1],mut[2]);
-  const prog=state.sems.length&&PROGRAMS[state.sems[0].prog]?PROGRAMS[state.sems[0].prog].label:'-';
-  doc.text(prog,M,y+5.5);
+  /* Header: KS logo, title, subtitle, date */
+  doc.addImage(KS_LOGO,'PNG',M,15,16,16);
+  doc.setFont('helvetica','bold');doc.setFontSize(23);setT(ink);
+  doc.text('REPORT CARD',M+21,24,{charSpace:1.4});
+  doc.setFont('helvetica','normal');doc.setFontSize(9);setT(mut);
+  doc.text('CGPA Calc - unofficial student report card',M+21.5,29.5);
+  doc.text('Generated '+dt,R,20,{align:'right'});
+  setF(acc);doc.rect(M,34,R-M,0.9,'F');
+  /* Student details block */
   const ov=overall();
+  const prog=state.sems.length&&PROGRAMS[state.sems[0].prog]?PROGRAMS[state.sems[0].prog].label:'-';
+  const status=ov.complete?'Complete - all credited subjects have marks':'Partial - '+ov.cr+' of '+ov.totalCr+' credits entered';
+  const fields=[['NAME',name],['PROGRAMME',prog],['GENERATED',dt],['STATUS',status]];
+  const fx=[M,110];
+  y=42;
+  for(let r=0;r<2;r++){
+    for(let cx=0;cx<2;cx++){
+      const f=fields[r*2+cx],x=fx[cx],w=74;
+      doc.setFont('helvetica','normal');doc.setFontSize(7);setT(mut);
+      doc.text(f[0],x,y,{charSpace:0.6});
+      doc.setFont('helvetica','bold');doc.setFontSize(10.5);setT(ink);
+      doc.text(doc.splitTextToSize(f[1],w)[0],x,y+4.6);
+      setD(lineC);doc.line(x,y+6.6,x+w,y+6.6);
+    }
+    y+=11.5;
+  }
+  y+=5.5;
+  /* CGPA banner */
   const cg=ov.cgpa!=null?ov.cgpa.toFixed(2)+(ov.assumed?'*':''):'-';
-  doc.setFont('helvetica','bold');doc.setFontSize(15);doc.setTextColor(acc[0],acc[1],acc[2]);
-  doc.text('CGPA '+cg+' / 10',R,y+2,{align:'right'});
-  if(!ov.complete){doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(180,83,9);doc.text('Partial - '+ov.cr+' of '+ov.totalCr+' credits entered; provisional until every credited subject has marks.',R,y+7.5,{align:'right'});}
-  y+=14;
-  const need=h=>{if(y+h>282){doc.addPage();y=16;}};
+  setF(acc);doc.roundedRect(M,y,R-M,17,2,2,'F');
+  doc.setTextColor(255,255,255);
+  doc.setFont('helvetica','bold');doc.setFontSize(8.5);
+  doc.text('OVERALL CGPA',M+5,y+6,{charSpace:0.8});
+  doc.setFont('helvetica','normal');doc.setFontSize(8);
+  doc.text('Credit-weighted, SRB formula',M+5,y+11.8);
+  doc.setFontSize(9.5);doc.text('/ 10',R-5,y+11.8,{align:'right'});
+  const w10=doc.getTextWidth('/ 10');
+  doc.setFont('helvetica','bold');doc.setFontSize(22);doc.text(cg,R-5-w10-1.5,y+11.8,{align:'right'});
+  y+=17;
+  if(!ov.complete){doc.setFont('helvetica','normal');doc.setFontSize(8.5);setT(amber);doc.text('Partial - '+ov.cr+' of '+ov.totalCr+' credits entered; provisional until every credited subject has marks.',M+1,y+4.5);y+=8;}
+  y+=6;
+  const need=h=>{if(y+h>272){doc.addPage();frame();y=18;}};
   state.sems.forEach(sem=>{
     const t=semStats(sem);
     let anyAssumed=false;sem.courses.forEach(c=>{const r=courseRes(c);if(r&&r.assumed)anyAssumed=true;});
-    need(26);
-    doc.setFillColor(243,245,249);doc.rect(M,y-4.6,R-M,8,'F');
-    doc.setFont('helvetica','bold');doc.setFontSize(10.5);doc.setTextColor(ink[0],ink[1],ink[2]);
-    doc.text(sem.name,M+2,y);
-    doc.setTextColor(acc[0],acc[1],acc[2]);
-    doc.text('SGPA '+(t.sgpa!=null?t.sgpa.toFixed(2)+(anyAssumed?'*':''):'-')+(t.complete?'':' (partial, '+t.cr+' of '+t.totalCr+' cr)'),R-2,y,{align:'right'});
-    y+=6.5;
-    doc.setFontSize(7.5);doc.setTextColor(mut[0],mut[1],mut[2]);
-    doc.text('SUBJECT',M+2,y);doc.text('CR',120,y);doc.text('ICA',132,y);doc.text('TEE',144,y);doc.text('FINAL',156,y);doc.text('GRADE',171,y);doc.text('PTS',190,y);
-    y+=2;doc.setDrawColor(lineC[0],lineC[1],lineC[2]);doc.line(M,y,R,y);y+=4.6;
-    doc.setFont('helvetica','normal');doc.setFontSize(9);
-    sem.courses.forEach(c=>{
+    const semH=8+6.2+sem.courses.length*6.2+7;
+    need(semH<=240?semH:30);
+    /* Semester bar */
+    setF(barFill);doc.roundedRect(M,y,R-M,8,1.5,1.5,'F');
+    doc.setFont('helvetica','bold');doc.setFontSize(10.5);setT(ink);
+    doc.text(sem.name,M+3,y+5.5);
+    setT(acc);
+    doc.text('SGPA '+(t.sgpa!=null?t.sgpa.toFixed(2)+(anyAssumed?'*':''):'-')+(t.complete?'':' (partial, '+t.cr+' of '+t.totalCr+' cr)'),R-3,y+5.5,{align:'right'});
+    y+=8;
+    /* Table header */
+    setF(acc);doc.rect(M,y,R-M,6.2,'F');
+    doc.setFontSize(7.3);doc.setTextColor(255,255,255);
+    const hy=y+4.3;
+    doc.text('SUBJECT',M+3,hy,{charSpace:0.4});
+    doc.text('CR',121,hy,{align:'right'});doc.text('ICA',134,hy,{align:'right'});doc.text('TEE',147,hy,{align:'right'});
+    doc.text('FINAL',160,hy,{align:'right'});doc.text('GRADE',174,hy,{align:'right'});doc.text('PTS',190,hy,{align:'right'});
+    y+=6.2;
+    sem.courses.forEach((c,i)=>{
       const r=courseRes(c);
-      need(6);
-      doc.setTextColor(ink[0],ink[1],ink[2]);
-      doc.text(doc.splitTextToSize(c.n,100)[0],M+2,y);
-      doc.setTextColor(mut[0],mut[1],mut[2]);
-      doc.text(String(c.cr),120,y);
-      doc.text(c.ica!==''?String(c.ica):'-',132,y);
-      doc.text(c.icaOnly?'-':(c.tee!==''?String(c.tee):'-'),144,y);
-      doc.setTextColor(ink[0],ink[1],ink[2]);
-      doc.text(r?r.pct.toFixed(1)+(r.assumed?'*':''):'-',156,y);
-      if(r&&r.pass)doc.setTextColor(22,163,74);else if(r)doc.setTextColor(220,38,38);
-      doc.text(r?r.grade:'-',171,y);
-      doc.text(r&&+c.cr>0?String(r.points):'-',190,y);
-      y+=5.2;
+      need(6.5);
+      if(i%2===1){setF(stripe);doc.rect(M,y,R-M,6.2,'F');}
+      doc.setFont('helvetica','normal');doc.setFontSize(9.3);setT(ink);
+      doc.text(doc.splitTextToSize(c.n,96)[0],M+3,y+4.2);
+      doc.setFontSize(9);setT(mut);
+      doc.text(String(c.cr),121,y+4.2,{align:'right'});
+      doc.text(c.ica!==''?String(c.ica):'-',134,y+4.2,{align:'right'});
+      doc.text(c.icaOnly?'-':(c.tee!==''?String(c.tee):'-'),147,y+4.2,{align:'right'});
+      doc.setFont('helvetica','bold');setT(ink);
+      doc.text(r?r.pct.toFixed(1)+(r.assumed?'*':''):'-',160,y+4.2,{align:'right'});
+      if(r&&r.pass)setT(green);else if(r)setT(red);else setT(mut);
+      doc.text(r?r.grade:'-',174,y+4.2,{align:'right'});
+      doc.setFont('helvetica','normal');setT(mut);
+      doc.text(r&&+c.cr>0?String(r.points):'-',190,y+4.2,{align:'right'});
+      y+=6.2;
     });
-    y+=4.5;
+    setD(lineC);doc.line(M,y,R,y);
+    y+=7;
   });
-  need(20);
-  doc.setFontSize(8);doc.setTextColor(mut[0],mut[1],mut[2]);
+  /* Grade scale box - actual SRB rules used by the calculator */
+  const bands=[['O','90 - 100','10 pts','Outstanding'],['A+','80 - 89.99','9 pts','Excellent'],['A','70 - 79.99','8 pts','Very Good'],['B+','60 - 69.99','7 pts','Good'],['B','55 - 59.99','6 pts','Above Average'],['C','50 - 54.99','5 pts','Average'],['P','40 - 49.99','4 pts','Pass'],['F','0 - 39.99','0 pts','Fail'],['AB','Absent','0 pts','Absent']];
+  const gsRows=Math.ceil(bands.length/2);
+  need(6.2+gsRows*6+9);
+  setF(acc);doc.rect(M,y,R-M,6.2,'F');
+  doc.setFont('helvetica','bold');doc.setFontSize(7.3);doc.setTextColor(255,255,255);
+  doc.text('GRADE SCALE',M+3,y+4.3,{charSpace:0.6});
+  y+=6.2;
+  setF([255,255,255]);setD(lineC);doc.rect(M,y,R-M,gsRows*6+3,'FD');
+  bands.forEach((b,i)=>{
+    const col=i<gsRows?0:1,row=i<gsRows?i:i-gsRows;
+    const x=M+5+col*88,yy=y+5.4+row*6;
+    doc.setFont('helvetica','bold');doc.setFontSize(9);setT(acc);
+    doc.text(b[0],x,yy);
+    doc.setFont('helvetica','normal');setT(ink);
+    doc.text(b[1],x+12,yy);
+    setT(mut);
+    doc.text(b[2],x+36,yy);
+    doc.text(b[3],x+54,yy);
+  });
+  y+=gsRows*6+3+6;
+  /* Notes and disclaimer */
+  need(14);
+  doc.setFont('helvetica','normal');doc.setFontSize(8);setT(mut);
   const notes=['* final entered as a total, without the TEE split - grade and pass assume TEE at least 40%, which the SRB requires separately.',
     'Unofficial report card. Subjects, credits and rules from the MPSTME Shirpur SRB A.Y. 2026-27. Always verify with your official grade sheet.'];
   notes.forEach(n=>{doc.splitTextToSize(n,R-M).forEach(ln=>{need(5);doc.text(ln,M,y);y+=4;});y+=1.5;});
+  /* Footer on every page */
   const pages=doc.getNumberOfPages();
-  for(let i=1;i<=pages;i++){doc.setPage(i);doc.setFontSize(8);doc.setTextColor(mut[0],mut[1],mut[2]);doc.text('CGPA Calc - kanishk-saini-007.github.io/CGPA-Calc - page '+i+' of '+pages,105,292,{align:'center'});}
+  for(let i=1;i<=pages;i++){
+    doc.setPage(i);
+    doc.setFont('helvetica','normal');doc.setFontSize(8);setT(mut);
+    doc.text('CGPA Calc - kanishk-saini-007.github.io/CGPA-Calc - generated on this device, nothing uploaded',105,292.5,{align:'center'});
+    doc.text('Page '+i+' of '+pages,R,292.5,{align:'right'});
+  }
   return doc;
 }
+
 $('#repBtn').onclick=async()=>{
   const nm=$('#repName');
   const name=nm.value.trim();
