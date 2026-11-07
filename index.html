@@ -235,6 +235,7 @@ const save=()=>localStorage.setItem('semscore_v1',JSON.stringify(state));
 const num=v=>{const x=parseFloat(v);return isNaN(x)?null:x};
 const MAXF={ica:50,tee:100,total:100};
 const clampMark=(f,v)=>{const x=parseFloat(v);if(isNaN(x))return'';if(x<0)return'0';const mx=MAXF[f];return x>mx?String(mx):v;};
+const numF=(f,v)=>{const x=parseFloat(v);if(isNaN(x))return null;return Math.min(Math.max(x,0),MAXF[f]);};
 const esc=s=>String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
 const SEMNAMES=['I','II','III','IV','V','VI','VII','VIII','IX','X'];
 const SHORT={btit:'B Tech IT',btce:'B Tech CE',mbatce:'MBA Tech CE',btcs:'B Tech CS',btaiml:'B Tech AIML'};
@@ -243,14 +244,14 @@ const BATCH={btit:'2026-30',btce:'2026-30',mbatce:'2026-31',btcs:'2026-30',btaim
 function courseRes(c){
   let pct,fail=false,why='',assumed=false;
   if(c.icaOnly){
-    const ica=num(c.ica); if(ica==null)return null;
+    const ica=numF('ica',c.ica); if(ica==null)return null;
     pct=ica*2; fail=ica<20; if(fail)why='ICA below 40%';
   }else if(c.mode==='t'){
-    const t=num(c.total); if(t==null)return null;
+    const t=numF('total',c.total); if(t==null)return null;
     pct=t; fail=t<40; if(fail)why='aggregate below 40%'; else assumed=true;
   }else{
-    const ica=num(c.ica); if(ica==null)return null;
-    const tee=num(c.tee); if(tee==null)return null;
+    const ica=numF('ica',c.ica); if(ica==null)return null;
+    const tee=numF('tee',c.tee); if(tee==null)return null;
     const fin=ica+tee/2; pct=fin;
     if(tee<40){fail=true;why='TEE below 40%';}
     else if(fin<40){fail=true;why='aggregate below 40%';}
@@ -290,6 +291,31 @@ function sanitizeState(s){
   return{sems:out};
 }
 
+function resHtml(r){
+  return `<div class="c-fin"><small>Final</small><span class="v">${r?r.pct.toFixed(1):'-'}</span></div>
+  ${r?`<span class="pill ${r.pass?'gpass':'gfail'}"${r.why?` title="${esc(r.why)}"`:''}${r.assumed?' title="Pass assumes TEE at least 40% - only the total was entered"':''}>${r.grade} &middot; ${r.points}${r.assumed?'*':''}${r.pass?'':' &middot; re-exam'}</span>`:'<span class="pill">-</span>'}`;
+}
+function sgHtml(s){
+  const t=semStats(s);
+  let anyAssumed=false;
+  s.courses.forEach(c=>{const r=courseRes(c);if(r&&r.assumed)anyAssumed=true;});
+  return `SGPA <b>${t.sgpa!=null?t.sgpa.toFixed(2)+(anyAssumed?'*':''):'-'}</b> &middot; ${t.complete?t.cr+' cr':t.cr+' of '+t.totalCr+' cr entered'}${t.fails?` &middot; <span class="no">${t.fails} F</span>`:''}`;
+}
+function updateDerived(si){
+  const s=state.sems[si];if(!s)return;
+  let anyAssumed=false;
+  s.courses.forEach((c,ci)=>{
+    const r=courseRes(c);
+    if(r&&r.assumed)anyAssumed=true;
+    const el=document.querySelector(`[data-card="${si}.${ci}"] .c-res`);
+    if(el)el.innerHTML=resHtml(r);
+  });
+  const sg=document.querySelector(`[data-sg="${si}"]`);
+  if(sg)sg.innerHTML=sgHtml(s);
+  const tn=document.querySelector(`[data-tnote="${si}"]`);
+  if(tn)tn.style.display=anyAssumed?'block':'none';
+  renderTop();save();
+}
 function renderSems(){
   if(!state.sems.length){
     $('#sems').innerHTML='<div class="empty"><b>No semester loaded yet</b>Pick your programme and semester above - the official subject list appears here, and you only type your marks.</div>';
@@ -311,17 +337,14 @@ function renderSems(){
         inputs=`<label>ICA /50<input data-c="${si}.${ci}" data-f="ica" type="number" inputmode="decimal" min="0" max="50" step="0.5" value="${esc(c.ica)}" placeholder="-"></label>
         <label>TEE /100<input data-c="${si}.${ci}" data-f="tee" type="number" inputmode="decimal" min="0" max="100" step="0.5" value="${esc(c.tee)}" placeholder="-"></label>`;
       }
-      return `<div class="course">
+      return `<div class="course" data-card="${si}.${ci}">
       <div class="c-top">
         <div class="c-name">${esc(c.n)}<span class="c-cr">${c.cr} cr</span></div>
         ${c.icaOnly?'':`<div class="mode"><button data-mode="${si}.${ci}" data-m="s" class="${c.mode!=='t'?' on':''}">ICA+TEE</button><button data-mode="${si}.${ci}" data-m="t" class="${c.mode==='t'?' on':''}">Total</button></div>`}
       </div>
       <div class="c-row">
         ${inputs}
-        <div class="c-res">
-          <div class="c-fin"><small>Final</small><span class="v">${r?r.pct.toFixed(1):'-'}</span></div>
-          ${r?`<span class="pill ${r.pass?'gpass':'gfail'}"${r.why?` title="${esc(r.why)}"`:''}${r.assumed?' title="Pass assumes TEE at least 40% - only the total was entered"':''}>${r.grade} &middot; ${r.points}${r.assumed?'*':''}${r.pass?'':' &middot; re-exam'}</span>`:'<span class="pill">-</span>'}
-        </div>
+        <div class="c-res">${resHtml(r)}</div>
       </div>
     </div>`;};
     const withIdx=s.courses.map((c,ci)=>[c,ci]);
@@ -331,12 +354,12 @@ function renderSems(){
     return `<div class="sem">
     <div class="sem-h">
       <span class="nm">${esc(s.name)}</span>
-      <span class="sg">SGPA <b>${t.sgpa!=null?t.sgpa.toFixed(2)+(anyAssumed?'*':''):'-'}</b> &middot; ${t.complete?t.cr+' cr':t.cr+' of '+t.totalCr+' cr entered'}${t.fails?` &middot; <span class="no">${t.fails} F</span>`:''}</span>
+      <span class="sg" data-sg="${si}">${sgHtml(s)}</span>
       <button class="warn" data-sem-del="${si}">Remove semester</button>
     </div>
     <div class="grid">
     ${mainCards}
-    ${anyAssumed?'<div class="tnote">* total entered without the TEE split - grade and pass assume TEE &ge; 40%, which the SRB requires separately.</div>':''}
+    <div class="tnote" data-tnote="${si}" style="display:${anyAssumed?'block':'none'}">* total entered without the TEE split - grade and pass assume TEE &ge; 40%, which the SRB requires separately.</div>
     </div>
     ${zeroHtml}
   </div>`;}).join('');
@@ -348,7 +371,7 @@ function renderTop(){
     $('#cgpaBig').innerHTML=`${o.cgpa.toFixed(2)}${o.assumed?'*':''}<small> /10</small>`;
     $('#cgpaBar').style.width=Math.min(100,o.cgpa/10*100)+'%';
     $('#cgpaTitle').textContent=o.complete?'Your CGPA':'Your CGPA so far';
-    $('#cgpaSub').textContent=(o.complete?`${o.cr} graded credits across ${state.sems.length} semester${state.sems.length>1?'s':''} - credit-weighted, SRB formula.`:`${o.cr} of ${o.totalCr} credits entered across ${state.sems.length} semester${state.sems.length>1?'s':''} - partial until every subject has marks.`)+(o.assumed?' * includes total-only entries - pass assumes TEE at least 40%.':'');
+    $('#cgpaSub').textContent=(o.complete?`${o.cr} graded credits across ${state.sems.length} semester${state.sems.length>1?'s':''} - credit-weighted, SRB formula.`:`${o.cr} of ${o.totalCr} credits entered across ${state.sems.length} semester${state.sems.length>1?'s':''} - partial until every credited subject has marks.`)+(o.assumed?' * includes total-only entries - pass assumes TEE at least 40%.':'');
   }
 }
 function renderPresetSels(){
@@ -366,7 +389,11 @@ function renderAll(){renderSems();renderTop();save();}
 
 document.addEventListener('input',e=>{
   const d=e.target.dataset;
-  if(d.c!=null){const[si,ci]=d.c.split('.').map(Number);const v=clampMark(d.f,e.target.value);if(v!==e.target.value)e.target.value=v;state.sems[si].courses[ci][d.f]=v;renderAll();}
+  if(d.c!=null){const[si,ci]=d.c.split('.').map(Number);state.sems[si].courses[ci][d.f]=e.target.value;updateDerived(si);}
+});
+document.addEventListener('change',e=>{
+  const d=e.target.dataset;
+  if(d.c!=null){const[si,ci]=d.c.split('.').map(Number);const v=clampMark(d.f,e.target.value);if(v!==e.target.value)e.target.value=v;state.sems[si].courses[ci][d.f]=v;updateDerived(si);}
 });
 document.addEventListener('click',e=>{
   const d=e.target.dataset;
