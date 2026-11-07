@@ -5,57 +5,64 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>CGPA Calc - NMIMS Shirpur SGPA &amp; CGPA calculator</title>
 <meta name="description" content="Unofficial SGPA and CGPA calculator for NMIMS MPSTME Shirpur, built on the Student Resource Book A.Y. 2026-27 (B Tech 2026-30, MBA Tech 2026-31). Subjects and credits prefilled - just enter your ICA and TEE marks after results. No login, your data stays in your browser.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230d1f16'/%3E%3Cpath d='M7 21l5-7 4 4 8-11' stroke='%23a3e635' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230c0e12'/%3E%3Cpath d='M7 21l5-7 4 4 8-11' stroke='%235ea9ff' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <style>
-:root{--bg:#0d1f16;--bg2:#12291d;--card:#16301f;--card2:#1b3a26;--lime:#a3e635;--lime-d:#65a30d;--ink:#eaf7d9;--mut:#9db8a3;--line:#24452e;--bad:#f87171;--amber:#fbbf24}
+:root{--bg:#f3f5f9;--bg2:#eef1f6;--card:#ffffff;--card2:#f7f9fc;--acc:#2563eb;--acc-d:#1d4ed8;--ink:#182234;--mut:#5b6676;--line:#dde3ec;--bad:#dc2626;--good:#16a34a;--amber:#b45309}
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--ink);font:15px/1.55 system-ui,-apple-system,'Segoe UI',sans-serif;min-height:100vh}
-.wrap{max-width:900px;margin:0 auto;padding:0 16px 70px}
-header.hero{padding:34px 0 18px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
-.logo{font-size:30px;font-weight:800;letter-spacing:-.5px}
-.logo b{color:var(--lime)}
-.tagline{color:var(--mut);font-size:13.5px;margin-top:2px}
+.wrap{max-width:860px;margin:0 auto;padding:0 16px 70px}
+header.hero{padding:30px 0 16px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.logo{font-size:28px;font-weight:800;letter-spacing:-.5px}
+.logo b{color:var(--acc)}
+.tagline{color:var(--mut);font-size:13px;margin-top:3px}
+.credit{color:var(--ink);font-size:12.5px;margin-top:5px;opacity:.85}
 .hbtns{display:flex;gap:8px}
-button{font:600 13px/1 system-ui,sans-serif;cursor:pointer;border:1.5px solid var(--lime);background:var(--lime);color:#0d1f16;border-radius:8px;padding:9px 15px;transition:transform .05s}
+button{font:600 13px/1 system-ui,sans-serif;cursor:pointer;border:1.5px solid var(--acc);background:var(--acc);color:#ffffff;border-radius:9px;padding:11px 16px;transition:transform .05s}
 button:active{transform:scale(.97)}
-button.ghost{background:transparent;color:var(--lime)}
-button.ghost:hover{background:var(--lime);color:#0d1f16}
-button.warn{border-color:var(--bad);color:var(--bad);background:transparent;font-size:11.5px;padding:6px 10px}
-button.warn:hover{background:var(--bad);color:#0d1f16}
+button.ghost{background:transparent;color:var(--acc);border-color:var(--line)}
+button.ghost:hover{border-color:var(--acc)}
+button.warn{border-color:var(--line);color:var(--mut);background:transparent;font-size:11.5px;padding:6px 10px}
+button.warn:hover{border-color:var(--bad);color:var(--bad)}
 button:disabled{opacity:.45;cursor:not-allowed}
-.notice{font-size:12.5px;color:var(--mut);background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:11px 13px;margin-bottom:18px}
-.notice b{color:var(--ink)}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px}
-.card h2{font-size:12px;letter-spacing:1.2px;text-transform:uppercase;color:var(--mut);margin-bottom:12px}
-.step{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:var(--lime);color:#0d1f16;font:700 12px/1 system-ui;margin-right:8px}
-select,input{font:14px/1.4 system-ui,sans-serif;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg2);color:var(--ink);width:100%}
-select:focus,input:focus{outline:1.5px solid var(--lime-d)}
+.notice{font-size:12.5px;color:var(--mut);margin-bottom:14px}
+.notice b{color:var(--ink);font-weight:600}
+details.mini{border:1px solid var(--line);border-radius:10px;background:var(--bg2);margin:0 0 16px}
+details.mini>summary{cursor:pointer;list-style:none;display:block;color:var(--mut);font-size:12.5px;padding:10px 13px;user-select:none}
+details.mini>summary::-webkit-details-marker{display:none}
+details.mini>summary::before{content:'+ ';color:var(--acc);font-weight:700}
+details.mini[open]>summary::before{content:'- '}
+details.mini .body{padding:0 13px 12px;font-size:12.5px;color:var(--mut)}
+details.mini .body b{color:var(--ink)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+.card h2{font-size:11.5px;letter-spacing:1.2px;text-transform:uppercase;color:var(--mut);margin-bottom:12px;font-weight:600}
+select,input{font:15px/1.4 system-ui,sans-serif;padding:11px 12px;border:1px solid var(--line);border-radius:9px;background:var(--bg2);color:var(--ink);width:100%}
+select:focus,input:focus{outline:1.5px solid var(--acc-d);border-color:var(--acc-d)}
 .rowline{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .rowline>select{flex:1;min-width:150px;width:auto}
 #loadMsg{color:var(--amber);font-size:12.5px;min-height:16px;margin-top:7px}
-.hero-score{background:linear-gradient(135deg,#16301f 0%,#0f2c1a 60%,#143b21 100%);border:1px solid var(--line);border-radius:16px;padding:22px 20px;margin-bottom:16px;display:flex;gap:22px;align-items:center;flex-wrap:wrap}
-.score-num{font-size:56px;font-weight:800;line-height:1;color:var(--lime)}
-.score-num small{font-size:20px;color:var(--mut);font-weight:600}
+.hero-score{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:14px;display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+.score-num{font-size:52px;font-weight:800;line-height:1;color:var(--acc)}
+.score-num small{font-size:19px;color:var(--mut);font-weight:600}
 .score-meta{flex:1;min-width:180px}
-.bar{height:9px;background:#0a1a10;border-radius:99px;overflow:hidden;margin:10px 0 6px}
-.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--lime-d),var(--lime));width:0;transition:width .3s}
-.sub{color:var(--mut);font-size:13px}
-table{width:100%;border-collapse:collapse;font-size:13.5px}
+.bar{height:8px;background:var(--bg);border-radius:99px;overflow:hidden;margin:10px 0 6px}
+.bar i{display:block;height:100%;background:var(--acc);width:0;transition:width .3s}
+.sub{color:var(--mut);font-size:12.5px}
+table{width:100%;border-collapse:collapse;font-size:13px}
 .ref th{font:600 10.5px/1.3 system-ui;text-transform:uppercase;letter-spacing:.6px;color:var(--mut);text-align:left;padding:7px 8px;border-bottom:1px solid var(--line)}
 .ref td{font-size:13px;padding:5px 8px;border-bottom:1px solid var(--line)}
 .ref tr:last-child td{border-bottom:none}
-.ref td:nth-child(2){color:var(--lime);font-weight:700}
-.sem{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px}
-.sem-h{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px;padding-bottom:11px;border-bottom:1px solid var(--line)}
-.sem-h .nm{font-weight:700;font-size:15px;margin-right:auto}
+.ref td:nth-child(2){color:var(--acc);font-weight:700}
+.sem{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px}
+.sem-h{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.sem-h .nm{font-weight:700;font-size:14.5px;margin-right:auto}
 .sg{font:600 12.5px/1 system-ui;color:var(--mut)}
-.sg b{color:var(--lime);font-size:15px}
+.sg b{color:var(--acc);font-size:15px}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 details.zero{margin-top:10px}
 details.zero>summary{cursor:pointer;list-style:none;display:block;color:var(--mut);font-size:12px;padding:9px 12px;border:1px dashed var(--line);border-radius:10px;user-select:none}
 details.zero>summary::-webkit-details-marker{display:none}
-details.zero>summary::before{content:'+ ';color:var(--lime);font-weight:700}
+details.zero>summary::before{content:'+ ';color:var(--acc);font-weight:700}
 details.zero[open]>summary::before{content:'- '}
 details.zero>summary span{display:block;font-size:11px;opacity:.75}
 .zgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
@@ -66,35 +73,37 @@ details.zero>summary span{display:block;font-size:11px;opacity:.75}
 .c-cr{flex:none;font:600 11px/1 system-ui;color:var(--mut);border:1px solid var(--line);border-radius:99px;padding:4px 8px;white-space:nowrap}
 .c-row{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}
 .c-row label{display:flex;flex-direction:column;gap:5px;font:600 10px/1 system-ui;letter-spacing:.6px;text-transform:uppercase;color:var(--mut)}
-.c-row input{width:74px;text-align:center;padding:8px 4px}
+.c-row input{width:80px;text-align:center;padding:10px 4px;font-size:16px;font-weight:600}
 .c-row input::placeholder{color:var(--mut)}
 .c-only{font:600 10px/1 system-ui;letter-spacing:.6px;text-transform:uppercase;color:var(--amber);align-self:center;padding:8px 0}
 .c-res{margin-left:auto;display:flex;align-items:center;gap:8px}
 .c-fin{text-align:right}
 .c-fin small{display:block;font:600 10px/1 system-ui;letter-spacing:.6px;text-transform:uppercase;color:var(--mut);margin-bottom:4px}
-.c-fin .v{font-weight:700;font-size:14px}
+.c-fin .v{font-weight:700;font-size:15px}
 .pill{font:600 11.5px/1 system-ui;padding:5px 10px;border-radius:99px;border:1px solid var(--line);white-space:nowrap}
-.gpass{color:var(--lime);border-color:var(--lime-d)}
-.gfail{color:var(--bad);border-color:var(--bad)}
+.gpass{color:var(--good);border-color:#a9d8bd}
+.gfail{color:var(--bad);border-color:#f0b9b9}
 .mode{display:inline-flex;border:1px solid var(--line);border-radius:99px;overflow:hidden;flex:none}
-.mode button{border:none;background:transparent;color:var(--mut);font:600 9.5px/1 system-ui;letter-spacing:.5px;text-transform:uppercase;padding:5px 8px;border-radius:0;cursor:pointer}
-.mode button.on{background:var(--lime);color:#0d1f16}
+.mode button{border:none;background:transparent;color:var(--mut);font:600 9.5px/1 system-ui;letter-spacing:.5px;text-transform:uppercase;padding:6px 9px;border-radius:0;cursor:pointer}
+.mode button.on{background:var(--acc);color:#ffffff}
 .tnote{grid-column:1/-1;color:var(--amber);font-size:11.5px;margin-top:2px}
 .mut{color:var(--mut);font-size:12.5px}
 .no{color:var(--bad)}
-.empty{border:1.5px dashed var(--line);border-radius:14px;padding:34px 20px;text-align:center;color:var(--mut);font-size:13.5px;margin-bottom:16px}
+.empty{border:1.5px dashed var(--line);border-radius:14px;padding:30px 20px;text-align:center;color:var(--mut);font-size:13.5px;margin-bottom:14px}
 .empty b{color:var(--ink);display:block;font-size:15px;margin-bottom:4px}
-footer{margin-top:24px;padding-top:14px;border-top:1px solid var(--line);color:var(--mut);font-size:12.5px}
+footer{margin-top:22px;padding-top:14px;border-top:1px solid var(--line);color:var(--mut);font-size:12px;text-align:center}
+footer b{color:var(--ink);font-weight:600}
 dialog{background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:20px;max-width:560px;width:92%}
 dialog::backdrop{background:rgba(0,0,0,.55)}
 textarea{width:100%;min-height:130px;font:12px/1.5 monospace;padding:9px;border:1px solid var(--line);border-radius:8px;margin:10px 0;background:var(--bg2);color:var(--ink)}
 @media(max-width:640px){
-  .score-num{font-size:44px}
+  .score-num{font-size:42px}
   #progSel{flex:1 1 100%}
   #semSel{flex:1 1 auto !important}
   .grid{grid-template-columns:1fr}
   .zgrid{grid-template-columns:1fr}
   .sem-h .nm{font-size:13.5px}
+  .c-row input{width:76px}
 }
 </style>
 </head>
@@ -103,7 +112,8 @@ textarea{width:100%;min-height:130px;font:12px/1.5 monospace;padding:9px;border:
 <header class="hero">
   <div>
     <div class="logo">CGPA <b>Calc</b></div>
-    <div class="tagline">NMIMS MPSTME Shirpur &middot; SGPA &amp; CGPA in seconds &middot; enter marks, nothing else</div>
+    <div class="tagline">NMIMS MPSTME Shirpur &middot; enter marks, get SGPA &amp; CGPA</div>
+    <div class="credit">Built by <b>Kanishk Saini</b></div>
   </div>
   <div class="hbtns">
     <button class="ghost" id="exportBtn">Backup</button>
@@ -111,17 +121,20 @@ textarea{width:100%;min-height:130px;font:12px/1.5 monospace;padding:9px;border:
   </div>
 </header>
 
-<div class="notice">Unofficial. Subjects, credits and rules straight from the <b>MPSTME Shirpur Student Resource Book A.Y. 2026-27</b> - <b>B Tech 2026-30</b> (Computer Engineering, Computer Science, IT, AI&amp;ML) and <b>MBA Tech 2026-31</b> (Computer Engineering). Senior batches follow their own SRB and are <b>not covered</b>; other campuses may differ. Always verify with your official grade sheet. Marks never leave your browser.</div>
+<div class="notice">Unofficial - subjects, credits and rules from the <b>MPSTME Shirpur SRB A.Y. 2026-27</b>. Always verify with your official grade sheet.</div>
+<details class="mini">
+  <summary>What is covered, and what is not</summary>
+  <div class="body"><b>B Tech 2026-30</b> (Computer Engineering, Computer Science, IT, AI&amp;ML) and <b>MBA Tech 2026-31</b> (Computer Engineering) - every semester, as printed in the SRB. Senior batches follow their own SRB and are <b>not covered</b>; other campuses may differ. Your marks never leave your browser.</div>
+</details>
 
 <div class="card">
-  <h2><span class="step">1</span>Pick your programme &amp; semester</h2>
+  <h2>Programme &amp; semester</h2>
   <div class="rowline">
     <select id="progSel" aria-label="Programme"></select>
     <select id="semSel" aria-label="Semester" style="flex:0 1 140px"></select>
     <button id="loadPreset">Load subjects</button>
   </div>
   <div id="loadMsg"></div>
-  <div class="mut" style="margin-top:6px">Subjects and credits load exactly as printed in the SRB - locked so nothing can be typed wrong. You only enter marks: ICA + TEE, or just the total /100.</div>
 </div>
 
 <div class="hero-score">
@@ -135,8 +148,9 @@ textarea{width:100%;min-height:130px;font:12px/1.5 monospace;padding:9px;border:
 
 <div id="sems"></div>
 
-<div class="card">
-  <h2>How it is calculated (from the SRB)</h2>
+<details class="mini">
+  <summary>How it is calculated (SRB rules)</summary>
+  <div class="body">
   <table class="ref">
     <tr><th>Final marks</th><th>Grade</th><th>Points</th><th>Performance</th></tr>
     <tr><td>90 - 100</td><td>O</td><td>10</td><td>Outstanding</td></tr>
@@ -149,13 +163,14 @@ textarea{width:100%;min-height:130px;font:12px/1.5 monospace;padding:9px;border:
     <tr><td>0 - 39.99</td><td>F</td><td>0</td><td>Fail</td></tr>
     <tr><td>Absent</td><td>AB</td><td>0</td><td>Absent</td></tr>
   </table>
-  <div class="mut" style="margin-top:10px">
+  <div style="margin-top:10px">
     Final marks = ICA (out of 50) + TEE (out of 100, scaled to 50). Pass needs <b>40% in the TEE</b> and <b>40% aggregate</b>; "ICA only" subjects pass at 40% of ICA. Fail either and it counts as F (0 points) until the re-exam. SGPA / CGPA are credit-weighted; 0-credit subjects show but don't count. Entered only the total /100? Then pass assumes <b>TEE &ge; 40%</b>, which the SRB checks separately - marked with *. The SRB gives no CGPA-to-percentage conversion.
   </div>
-</div>
+  </div>
+</details>
 
 <footer>
-  Made by a student, for the campus. Not an official NMIMS tool. Source: MPSTME Shirpur SRB A.Y. 2026-27. Everything stays in your browser - use Backup to keep a copy or move devices.
+  Built by <b>Kanishk Saini</b> &middot; Not an official NMIMS tool &middot; Source: MPSTME Shirpur SRB A.Y. 2026-27 &middot; Your marks stay in your browser
 </footer>
 </div>
 
@@ -305,6 +320,13 @@ function updateDerived(si){
   const s=state.sems[si];if(!s)return;
   let anyAssumed=false;
   s.courses.forEach((c,ci)=>{
+    if(!c.icaOnly&&c.mode!=='t'){
+      const ica=numF('ica',c.ica),tee=numF('tee',c.tee);
+      const comp=(ica!=null&&tee!=null)?String(Math.round((ica+tee/2)*100)/100):'';
+      if(c.total!==comp)c.total=comp;
+      const ti=document.querySelector(`[data-card="${si}.${ci}"] input[data-f="total"]`);
+      if(ti&&ti.value!==comp)ti.value=comp;
+    }
     const r=courseRes(c);
     if(r&&r.assumed)anyAssumed=true;
     const el=document.querySelector(`[data-card="${si}.${ci}"] .c-res`);
@@ -331,16 +353,14 @@ function renderSems(){
       let inputs;
       if(c.icaOnly){
         inputs=`<label>ICA /50<input data-c="${si}.${ci}" data-f="ica" type="number" inputmode="decimal" min="0" max="50" step="0.5" value="${esc(c.ica)}" placeholder="-"></label><span class="c-only">ICA only - no TEE</span>`;
-      }else if(c.mode==='t'){
-        inputs=`<label>Total /100<input data-c="${si}.${ci}" data-f="total" type="number" inputmode="decimal" min="0" max="100" step="0.5" value="${esc(c.total)}" placeholder="-"></label>`;
       }else{
         inputs=`<label>ICA /50<input data-c="${si}.${ci}" data-f="ica" type="number" inputmode="decimal" min="0" max="50" step="0.5" value="${esc(c.ica)}" placeholder="-"></label>
-        <label>TEE /100<input data-c="${si}.${ci}" data-f="tee" type="number" inputmode="decimal" min="0" max="100" step="0.5" value="${esc(c.tee)}" placeholder="-"></label>`;
+        <label>TEE /100<input data-c="${si}.${ci}" data-f="tee" type="number" inputmode="decimal" min="0" max="100" step="0.5" value="${esc(c.tee)}" placeholder="-"></label>
+        <label>Total /100<input data-c="${si}.${ci}" data-f="total" type="number" inputmode="decimal" min="0" max="100" step="0.5" value="${esc(c.total)}" placeholder="-"></label>`;
       }
       return `<div class="course" data-card="${si}.${ci}">
       <div class="c-top">
         <div class="c-name">${esc(c.n)}<span class="c-cr">${c.cr} cr</span></div>
-        ${c.icaOnly?'':`<div class="mode"><button data-mode="${si}.${ci}" data-m="s" class="${c.mode!=='t'?' on':''}">ICA+TEE</button><button data-mode="${si}.${ci}" data-m="t" class="${c.mode==='t'?' on':''}">Total</button></div>`}
       </div>
       <div class="c-row">
         ${inputs}
@@ -382,23 +402,40 @@ function renderPresetSels(){
   sel.value=locked||(ks.includes(sel.value)?sel.value:ks[0]);
   sel.disabled=!!locked;
   const p=sel.value;
+  const prevSem=$('#semSel').value;
   $('#semSel').innerHTML=PROGRAMS[p].sems.map((s,i)=>`<option value="${i}">Semester ${SEMNAMES[i]}</option>`).join('');
+  if(prevSem!==''&&+prevSem<PROGRAMS[p].sems.length)$('#semSel').value=prevSem;
   $('#loadMsg').textContent=locked?`Locked to ${SHORT[locked]} - your loaded semesters are from this programme. Remove all semesters to switch.`:'';
 }
 function renderAll(){renderSems();renderTop();save();}
 
 document.addEventListener('input',e=>{
   const d=e.target.dataset;
-  if(d.c!=null){const[si,ci]=d.c.split('.').map(Number);state.sems[si].courses[ci][d.f]=e.target.value;updateDerived(si);}
+  if(d.c!=null){
+    const[si,ci]=d.c.split('.').map(Number);
+    const c=state.sems[si].courses[ci];
+    c[d.f]=e.target.value;
+    if(d.f==='total')c.mode='t';
+    else if(c.ica!==''&&c.tee!=='')c.mode='s';
+    updateDerived(si);
+  }
 });
 document.addEventListener('change',e=>{
   const d=e.target.dataset;
-  if(d.c!=null){const[si,ci]=d.c.split('.').map(Number);const v=clampMark(d.f,e.target.value);if(v!==e.target.value)e.target.value=v;state.sems[si].courses[ci][d.f]=v;updateDerived(si);}
+  if(d.c!=null){
+    const[si,ci]=d.c.split('.').map(Number);
+    const v=clampMark(d.f,e.target.value);
+    if(v!==e.target.value)e.target.value=v;
+    const c=state.sems[si].courses[ci];
+    c[d.f]=v;
+    if(d.f==='total')c.mode='t';
+    else if(c.ica!==''&&c.tee!=='')c.mode='s';
+    updateDerived(si);
+  }
 });
 document.addEventListener('click',e=>{
   const d=e.target.dataset;
   if(d.semDel!=null){if(confirm('Remove this semester and its marks?')){state.sems.splice(+d.semDel,1);renderPresetSels();renderAll();}return;}
-  if(d.mode!=null){const[si,ci]=d.mode.split('.').map(Number);state.sems[si].courses[ci].mode=d.m;renderAll();}
 });
 $('#progSel').addEventListener('change',()=>{
   const p=$('#progSel').value;
