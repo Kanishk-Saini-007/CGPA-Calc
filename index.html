@@ -11,6 +11,11 @@
 html[data-theme=dark]{--bg:#0d1015;--bg2:#141922;--card:#161c26;--card2:#1a212d;--acc:#5ea9ff;--acc-d:#7cb6ff;--ink:#e6ebf3;--mut:#98a4b4;--line:#2b333f;--bad:#f87171;--good:#4ade80;--amber:#fbbf24}
 html[data-theme=dark] .gpass{border-color:#1f7a45}
 html[data-theme=dark] .gfail{border-color:#8f2f2f}
+button.theme-toggle{display:inline-flex;align-items:center;gap:7px;background:#0d1015;color:#e6ebf3;border-color:#0d1015}
+button.theme-toggle:hover{background:#1a212d;border-color:#1a212d}
+html[data-theme=dark] button.theme-toggle{background:#e6ebf3;color:#0d1015;border-color:#e6ebf3}
+html[data-theme=dark] button.theme-toggle:hover{background:#ffffff;border-color:#ffffff}
+button.theme-toggle svg{width:14px;height:14px;flex:none}
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--ink);font:15px/1.55 system-ui,-apple-system,'Segoe UI',sans-serif;min-height:100vh}
@@ -118,7 +123,7 @@ textarea{width:100%;min-height:130px;font:12px/1.5 monospace;padding:9px;border:
     <div class="tagline">NMIMS MPSTME Shirpur &middot; enter marks, get SGPA &amp; CGPA</div>
   </div>
   <div class="hbtns">
-    <button class="ghost" id="themeBtn" type="button" title="Switch to dark theme">Dark</button>
+    <button class="theme-toggle" id="themeBtn" type="button" title="Switch to dark theme">Dark mode</button>
     <button class="ghost" id="exportBtn">Backup</button>
     <button class="ghost" id="importBtn">Restore</button>
   </div>
@@ -462,7 +467,9 @@ $('#ioOk').onclick=()=>{if(ioMode!=='import')return;try{const s=sanitizeState(JS
 
 (function(){
   var btn=$('#themeBtn'),root=document.documentElement,key='cgpa-theme';
-  function apply(t){root.dataset.theme=t;try{localStorage.setItem(key,t)}catch(e){}if(btn){btn.textContent=t==='dark'?'Light':'Dark';btn.title='Switch to '+(t==='dark'?'light':'dark')+' theme';}}
+  var MOON='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg>';
+  var SUN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2" fill="currentColor" stroke="none"/><path d="M12 2v2.2M12 19.8V22M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M2 12h2.2M19.8 12H22M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/></svg>';
+  function apply(t){root.dataset.theme=t;try{localStorage.setItem(key,t)}catch(e){}if(btn){btn.innerHTML=(t==='dark'?SUN:MOON)+'<span>'+(t==='dark'?'Light mode':'Dark mode')+'</span>';btn.title='Switch to '+(t==='dark'?'light':'dark')+' theme';}}
   var saved='light';try{saved=localStorage.getItem(key)==='dark'?'dark':'light'}catch(e){}
   apply(saved);
   if(btn)btn.onclick=function(){apply(root.dataset.theme==='dark'?'light':'dark');};
