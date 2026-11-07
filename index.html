@@ -179,6 +179,15 @@ textarea{width:100%;min-height:130px;font:12px/1.5 monospace;padding:9px;border:
   </div>
 </details>
 
+<div class="card" id="reportCard">
+  <h2 style="font-size:16px;margin-bottom:4px">Download report card</h2>
+  <p style="font-size:12.5px;color:var(--mut);margin-bottom:10px">Get a clean PDF report card of your entered marks, grades, SGPA and CGPA. It is generated on your device - nothing is uploaded.</p>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+    <input id="repName" type="text" placeholder="Your name for the report card" autocomplete="name" style="flex:1;min-width:200px">
+    <button id="repBtn" type="button">Download report</button>
+  </div>
+</div>
+
 <footer>
   Built by <b>Kanishk Saini</b> &middot; Not an official NMIMS tool &middot; Source: MPSTME Shirpur SRB A.Y. 2026-27 &middot; Your marks stay in your browser &middot; <a href="https://github.com/Kanishk-Saini-007" target="_blank" rel="noopener noreferrer">GitHub</a>
 </footer>
@@ -466,6 +475,85 @@ $('#exportBtn').onclick=()=>{ioMode='export';$('#ioTitle').textContent='Backup -
 $('#importBtn').onclick=()=>{ioMode='import';$('#ioTitle').textContent='Restore - paste a backup';$('#ioText').value='';$('#ioOk').style.display='';$('#ioDlg').showModal();};
 $('#ioOk').onclick=()=>{if(ioMode!=='import')return;try{const s=sanitizeState(JSON.parse($('#ioText').value));if(!s)throw 0;state=s;renderPresetSels();renderAll();$('#ioDlg').close();}catch(e){alert('That backup was rejected - it does not match the official SRB subject lists (edited subjects, credits or programmes are not allowed).');}};
 
+
+/* Download report card - PDF built on-device with jsPDF (lazy-loaded); marks never leave the browser. */
+const KS_LOGO='data:image/png;base64,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';
+function loadJsPdf(){return new Promise((res,rej)=>{if(window.jspdf&&window.jspdf.jsPDF)return res();const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';s.onload=()=>res();s.onerror=()=>rej(new Error('jspdf load failed'));document.head.appendChild(s);});}
+function buildReport(name){
+  const doc=new window.jspdf.jsPDF({unit:'mm',format:'a4'});
+  const M=14,R=196;let y=0;
+  const ink=[24,34,52],mut=[91,102,118],acc=[37,99,235],lineC=[221,227,236];
+  const dt=new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
+  doc.addImage(KS_LOGO,'PNG',M,10,16,16);
+  doc.setFont('helvetica','bold');doc.setFontSize(17);doc.setTextColor(ink[0],ink[1],ink[2]);
+  doc.text('CGPA Calc - Report Card',M+21,19);
+  doc.setFont('helvetica','normal');doc.setFontSize(9.5);doc.setTextColor(mut[0],mut[1],mut[2]);
+  doc.text('Unofficial report card - generated on this device, nothing uploaded',M+21,24.5);
+  doc.text('Generated '+dt,R,19,{align:'right'});
+  y=32;doc.setDrawColor(lineC[0],lineC[1],lineC[2]);doc.line(M,y,R,y);y+=8;
+  doc.setFont('helvetica','bold');doc.setFontSize(12);doc.setTextColor(ink[0],ink[1],ink[2]);
+  doc.text(name,M,y);
+  doc.setFont('helvetica','normal');doc.setFontSize(9.5);doc.setTextColor(mut[0],mut[1],mut[2]);
+  const prog=state.sems.length&&PROGRAMS[state.sems[0].prog]?PROGRAMS[state.sems[0].prog].label:'-';
+  doc.text(prog,M,y+5.5);
+  const ov=overall();
+  const cg=ov.cgpa!=null?ov.cgpa.toFixed(2)+(ov.assumed?'*':''):'-';
+  doc.setFont('helvetica','bold');doc.setFontSize(15);doc.setTextColor(acc[0],acc[1],acc[2]);
+  doc.text('CGPA '+cg+' / 10',R,y+2,{align:'right'});
+  y+=14;
+  const need=h=>{if(y+h>282){doc.addPage();y=16;}};
+  state.sems.forEach(sem=>{
+    const t=semStats(sem);
+    let anyAssumed=false;sem.courses.forEach(c=>{const r=courseRes(c);if(r&&r.assumed)anyAssumed=true;});
+    need(26);
+    doc.setFillColor(243,245,249);doc.rect(M,y-4.6,R-M,8,'F');
+    doc.setFont('helvetica','bold');doc.setFontSize(10.5);doc.setTextColor(ink[0],ink[1],ink[2]);
+    doc.text(sem.name,M+2,y);
+    doc.setTextColor(acc[0],acc[1],acc[2]);
+    doc.text('SGPA '+(t.sgpa!=null?t.sgpa.toFixed(2)+(anyAssumed?'*':''):'-'),R-2,y,{align:'right'});
+    y+=6.5;
+    doc.setFontSize(7.5);doc.setTextColor(mut[0],mut[1],mut[2]);
+    doc.text('SUBJECT',M+2,y);doc.text('CR',120,y);doc.text('ICA',132,y);doc.text('TEE',144,y);doc.text('FINAL',156,y);doc.text('GRADE',171,y);doc.text('PTS',190,y);
+    y+=2;doc.setDrawColor(lineC[0],lineC[1],lineC[2]);doc.line(M,y,R,y);y+=4.6;
+    doc.setFont('helvetica','normal');doc.setFontSize(9);
+    sem.courses.forEach(c=>{
+      const r=courseRes(c);
+      need(6);
+      doc.setTextColor(ink[0],ink[1],ink[2]);
+      doc.text(doc.splitTextToSize(c.n,100)[0],M+2,y);
+      doc.setTextColor(mut[0],mut[1],mut[2]);
+      doc.text(String(c.cr),120,y);
+      doc.text(c.ica!==''?String(c.ica):'-',132,y);
+      doc.text(c.icaOnly?'-':(c.tee!==''?String(c.tee):'-'),144,y);
+      doc.setTextColor(ink[0],ink[1],ink[2]);
+      doc.text(r?r.pct.toFixed(1)+(r.assumed?'*':''):'-',156,y);
+      if(r&&r.pass)doc.setTextColor(22,163,74);else if(r)doc.setTextColor(220,38,38);
+      doc.text(r?r.grade:'-',171,y);
+      doc.text(r&&+c.cr>0?String(r.points):'-',190,y);
+      y+=5.2;
+    });
+    y+=4.5;
+  });
+  need(20);
+  doc.setFontSize(8);doc.setTextColor(mut[0],mut[1],mut[2]);
+  const notes=['* final entered as a total, without the TEE split - grade and pass assume TEE at least 40%, which the SRB requires separately.',
+    'Unofficial report card. Subjects, credits and rules from the MPSTME Shirpur SRB A.Y. 2026-27. Always verify with your official grade sheet.'];
+  notes.forEach(n=>{doc.splitTextToSize(n,R-M).forEach(ln=>{need(5);doc.text(ln,M,y);y+=4;});y+=1.5;});
+  const pages=doc.getNumberOfPages();
+  for(let i=1;i<=pages;i++){doc.setPage(i);doc.setFontSize(8);doc.setTextColor(mut[0],mut[1],mut[2]);doc.text('CGPA Calc - kanishk-saini-007.github.io/CGPA-Calc - page '+i+' of '+pages,105,292,{align:'center'});}
+  return doc;
+}
+$('#repBtn').onclick=async()=>{
+  const nm=$('#repName');
+  const name=nm.value.trim();
+  if(!name){nm.focus();nm.style.borderColor='var(--bad)';return;}
+  nm.style.borderColor='';
+  if(!state.sems.length){alert('Load at least one semester and enter marks first.');return;}
+  const btn=$('#repBtn');btn.disabled=true;btn.textContent='Building PDF...';
+  try{await loadJsPdf();const d=buildReport(name);d.save('CGPA-Report-'+name.replace(/\s+/g,'-')+'.pdf');}
+  catch(e){alert('Could not load the PDF builder - check your internet connection and try again.');}
+  btn.disabled=false;btn.textContent='Download report';
+};
 
 (function(){
   var btn=$('#themeBtn'),root=document.documentElement,key='cgpa-theme';
