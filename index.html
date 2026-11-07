@@ -500,6 +500,7 @@ function buildReport(name){
   const cg=ov.cgpa!=null?ov.cgpa.toFixed(2)+(ov.assumed?'*':''):'-';
   doc.setFont('helvetica','bold');doc.setFontSize(15);doc.setTextColor(acc[0],acc[1],acc[2]);
   doc.text('CGPA '+cg+' / 10',R,y+2,{align:'right'});
+  if(!ov.complete){doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(180,83,9);doc.text('Partial - '+ov.cr+' of '+ov.totalCr+' credits entered; provisional until every credited subject has marks.',R,y+7.5,{align:'right'});}
   y+=14;
   const need=h=>{if(y+h>282){doc.addPage();y=16;}};
   state.sems.forEach(sem=>{
@@ -510,7 +511,7 @@ function buildReport(name){
     doc.setFont('helvetica','bold');doc.setFontSize(10.5);doc.setTextColor(ink[0],ink[1],ink[2]);
     doc.text(sem.name,M+2,y);
     doc.setTextColor(acc[0],acc[1],acc[2]);
-    doc.text('SGPA '+(t.sgpa!=null?t.sgpa.toFixed(2)+(anyAssumed?'*':''):'-'),R-2,y,{align:'right'});
+    doc.text('SGPA '+(t.sgpa!=null?t.sgpa.toFixed(2)+(anyAssumed?'*':''):'-')+(t.complete?'':' (partial, '+t.cr+' of '+t.totalCr+' cr)'),R-2,y,{align:'right'});
     y+=6.5;
     doc.setFontSize(7.5);doc.setTextColor(mut[0],mut[1],mut[2]);
     doc.text('SUBJECT',M+2,y);doc.text('CR',120,y);doc.text('ICA',132,y);doc.text('TEE',144,y);doc.text('FINAL',156,y);doc.text('GRADE',171,y);doc.text('PTS',190,y);
